@@ -1,0 +1,81 @@
+@{
+    var role = ViewData["PrototypeRole"] as string ?? "admin";
+    var section = ViewData["PrototypeSection"] as string ?? "index";
+    var isAdminPreview = role == "admin";
+    var navigation = isAdminPreview ? PrototypeNavigation.Admin : PrototypeNavigation.User;
+    var currentPath = Context.Request.PathBase.Add(Context.Request.Path);
+    var userSection = PrototypeNavigation.User.Any(item => item.Section == section) ? section : "index";
+    var adminPreviewUrl = section != "index"
+        ? Url.RouteUrl("prototype", new { role = "admin", section })
+        : Url.Action("Index", "Home");
+}
+<!doctype html>
+<html lang="sk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"]</title>
+    <link rel="icon" type="image/png" href="~/prototype/logo.png">
+    <link rel="stylesheet" href="~/prototype/prototype.css" asp-append-version="true">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand">
+                <img class="brand-logo" src="~/prototype/logo.png" alt="">
+                <p class="brand-name">BAJKUJ <span>V MESTE</span></p>
+            </div>
+            <nav aria-label="Hlavná navigácia">
+                <ul class="menu">
+                    @foreach (var item in navigation.Where(item => item.ShowInMenu))
+                    {
+                        var href = isAdminPreview && item.Section == "index"
+                            ? Url.Action("Index", "Home")
+                            : Url.RouteUrl("prototype", new { role, section = item.Section });
+                        <li>
+                            <a href="@href" aria-current="@(item.Section == section ? "page" : null)" aria-label="@item.Label">
+                                <span class="icon icon-@item.Icon" aria-hidden="true"></span><span>@item.Label</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home")" method="post">
+                    <button class="sign-out" type="submit" aria-label="Odhlásiť sa">
+                        <span class="icon icon-logout" aria-hidden="true"></span><span>Odhlásiť sa</span>
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a class="sign-out" asp-area="Identity" asp-page="/Account/Login"
+                   asp-route-returnUrl="@currentPath" aria-label="Prihlásiť sa">
+                    <span class="icon icon-account" aria-hidden="true"></span><span>Prihlásiť sa</span>
+                </a>
+            }
+        </aside>
+        <div class="workspace">
+            <header class="topbar">
+                <span class="notification" role="img" aria-label="Nové oznámenie"><span class="icon icon-bell" aria-hidden="true"></span></span>
+                <span class="topbar-divider" aria-hidden="true"></span>
+                <div class="account">
+                    <span class="icon icon-account" aria-hidden="true"></span>
+                    <details class="role-picker">
+                        <summary>Ukážka roly · @(isAdminPreview ? "Admin" : "Používateľ")</summary>
+                        <div class="role-options">
+                            <a href="@(isAdminPreview ? currentPath.Value : adminPreviewUrl)" aria-current="@(isAdminPreview ? "page" : null)">Admin</a>
+                            <a asp-route="prototype" asp-route-role="user" asp-route-section="@userSection"
+                               aria-current="@(!isAdminPreview ? "page" : null)">Používateľ</a>
+                        </div>
+                    </details>
+                </div>
+            </header>
+            <main>
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+</body>
+</html>
