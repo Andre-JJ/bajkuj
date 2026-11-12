@@ -1,6 +1,35 @@
 @{
     ViewData["Title"] = "Zmluvy – Bajkuj v meste";
+    var contracts = PrototypeContract.CreateMockContracts();
 }
 
-<div class="intro"><h1>Zmluvy</h1></div>
-<section class="panel placeholder"><h2>Vitajte na stránke Zmluvy.</h2><p>Obsah tejto stránky pripravujeme.</p></section>
+<div class="intro"><h1 id="contracts-heading">Zmluvy</h1></div>
+<section class="panel contract-panel" aria-labelledby="contracts-heading">
+    <div class="table-wrap">
+        <table aria-labelledby="contracts-heading">
+            <thead>
+                <tr>
+                    <th scope="col">Číslo zmluvy</th>
+                    <th scope="col">Nájomca</th>
+                    <th scope="col">Bicykel</th>
+                    <th scope="col">Začiatok prenájmu</th>
+                    <th scope="col">Koniec prenájmu</th>
+                    <th scope="col">Stav</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var contract in contracts)
+                {
+                    <tr>
+                        <th scope="row">@contract.Number</th>
+                        <td>@contract.Tenant</td>
+                        <td>@contract.Bicycle</td>
+                        <td><time datetime="@contract.Start.ToString("yyyy-MM-dd")">@contract.Start.ToString("d. M. yyyy")</time></td>
+                        <td><time datetime="@contract.End.ToString("yyyy-MM-dd")">@contract.End.ToString("d. M. yyyy")</time></td>
+                        <td><span class="contract-status" data-status="@contract.Status">@contract.Status</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

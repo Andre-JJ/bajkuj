@@ -45,6 +45,15 @@ h1 { font-size: 3.55rem; line-height: 1.12; letter-spacing: -.075rem; margin-bot
 .panel header { min-height: 4.95rem; display: flex; align-items: center; gap: 1.05rem; padding-left: .3rem; }
 .panel header .icon { width: 2.3rem; height: 2.3rem; }
 .panel h2 { font-size: 1.47rem; line-height: 1.14; letter-spacing: -.025rem; }
+.bike-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: 1.05rem; }
+.bike-card { height: 100%; }
+.bike-card header { padding-left: 0; }
+.bike-card dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: .65rem 1rem; border-top: 1px solid var(--border); margin: 0; padding: .9rem 0 .65rem; }
+.bike-card dt { color: #555; }
+.bike-card dd { margin: 0; text-align: right; font-weight: 600; }
+.bike-status { display: inline-block; border-radius: .5rem; background: #f0f0f0; padding: .16rem .55rem; }
+.bike-status[data-status="dostupny"] { background: #e1f3e6; }
+.bike-status[data-status="prenajaty"] { background: #ffeca1; }
 .panel .all { margin-left: auto; display: flex; gap: .55rem; align-items: center; white-space: nowrap; border-radius: .58rem; background: var(--yellow); padding: .7rem 1.05rem; font-weight: 700; }
 .panel .all .icon { width: 1.12rem; height: 1.12rem; }
 .activity li { display: grid; grid-template-columns: 3.6rem minmax(0, 1fr); align-items: center; }
@@ -60,6 +69,21 @@ td { height: 2.85rem; }
 tr + tr td { border-top: 1px solid var(--border); }
 td:last-child { text-align: right; padding-left: 0; padding-right: .35rem; }
 .days { display: inline-block; background: #ffeca1; border-radius: .62rem; padding: .23rem .72rem; font-size: 1rem; }
+.contract-panel { padding-top: 1rem; }
+.contract-panel tbody th { background: none; height: auto; }
+.contract-panel tbody tr + tr th { border-top: 1px solid var(--border); }
+.contract-panel td:last-child { text-align: left; padding: .35rem 1rem; }
+.contract-status { display: inline-block; border-radius: .5rem; background: #f0f0f0; padding: .16rem .55rem; }
+.contract-status[data-status="Aktívna"] { background: #e1f3e6; }
+.contract-status[data-status="Čaká na podpis"] { background: #ffeca1; }
+.applicant-list { display: grid; gap: .65rem; }
+.applicant { padding: 0; }
+.applicant summary { cursor: pointer; border-radius: .75rem; padding: .9rem 1.28rem; font-size: 1.15rem; font-weight: 700; }
+.applicant summary::marker { color: #646464; }
+.applicant[open] summary { border-bottom: 1px solid var(--border); border-radius: .75rem .75rem 0 0; }
+.applicant .table-wrap, .applicant-empty { padding: .75rem 1.28rem; }
+.applicant-caption { padding: 0 0 .65rem; text-align: left; font-weight: 600; }
+.applicant td:last-child { text-align: left; padding: .35rem 1rem; }
 .status { position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: center; gap: 1.5rem; min-height: 6.45rem; margin-top: 2.28rem; padding: .9rem 1.65rem; background: #ffeda6; border: 1px solid #ffdd46; border-radius: .75rem; }
 .status-icon { display: grid; place-items: center; width: 3.4rem; height: 3.4rem; border-radius: 50%; background: #ffd300; flex: none; }
 .status-icon .icon { width: 2.7rem; height: 2.7rem; }

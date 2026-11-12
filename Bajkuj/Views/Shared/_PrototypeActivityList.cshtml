@@ -1,0 +1,14 @@
+@model IEnumerable<PrototypeActivity>
+
+<ul class="activity">
+    @foreach (var entry in Model)
+    {
+        <li>
+            <span class="icon icon-@entry.Icon" aria-hidden="true"></span>
+            <div class="activity-row">
+                <span><strong>@entry.Description:</strong> @entry.Detail</span>
+                <time datetime="@entry.Duration">@entry.TimeLabel</time>
+            </div>
+        </li>
+    }
+</ul>

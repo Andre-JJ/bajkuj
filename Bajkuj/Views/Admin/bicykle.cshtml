@@ -1,6 +1,41 @@
+@using System.Globalization
+@model IReadOnlyList<Bajkuj.Models.Bicykel>
 @{
     ViewData["Title"] = "Bicykle – Bajkuj v meste";
+    var slovak = CultureInfo.GetCultureInfo("sk-SK");
 }
 
 <div class="intro"><h1>Bicykle</h1></div>
-<section class="panel placeholder"><h2>Vitajte na stránke Bicykle.</h2><p>Obsah tejto stránky pripravujeme.</p></section>
+<ul class="bike-grid">
+    @foreach (var bicykel in Model)
+    {
+        var status = bicykel.Stav switch
+        {
+            "dostupny" => "Dostupný",
+            "prenajaty" => "Prenajatý",
+            "v_servise" => "V servise",
+            _ => bicykel.Stav
+        };
+
+        <li>
+            <article class="panel bike-card">
+                <header>
+                    <span class="icon icon-bike" aria-hidden="true"></span>
+                    <h2>@bicykel.Model</h2>
+                </header>
+                <dl>
+                    <dt>Evidenčné číslo</dt>
+                    <dd>@bicykel.Id</dd>
+                    <dt>Typ</dt>
+                    <dd>@bicykel.Typ</dd>
+                    <dt>Stav</dt>
+                    <dd><span class="bike-status" data-status="@bicykel.Stav">@status</span></dd>
+                    <dt>Cena</dt>
+                    <dd>@bicykel.CenaZaDen.ToString("C", slovak)</dd>
+                    <dt>Dátum pridania</dt>
+                    <dd><time datetime="@bicykel.DatumPridania.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@bicykel.DatumPridania.ToString("d. M. yyyy", slovak)</time></dd>
+                </dl>
+            </article>
+        </li>
+    }
+</ul>

@@ -1,6 +1,11 @@
 @{
     Layout = "_PrototypeLayout";
     ViewData["Title"] = "Dashboard – Bajkuj v meste";
+    var today = PrototypeContract.Today;
+    var upcomingContracts = PrototypeContract.CreateMockContracts()
+        .Where(contract => contract.Status == "Aktívna" && contract.End >= today)
+        .OrderBy(contract => contract.End)
+        .Take(5);
 }
 
 <div class="intro">
@@ -19,13 +24,7 @@
       <span class="icon icon-history" aria-hidden="true"></span><h2 id="activity-heading">Posledná aktivita</h2>
       <a class="all" asp-route="prototype" asp-route-role="admin" asp-route-section="aktivita">Zobraziť všetko <span class="icon icon-arrow" aria-hidden="true"></span></a>
     </header>
-    <ul class="activity">
-      <li><span class="icon icon-person" aria-hidden="true"></span><div class="activity-row"><span><strong>Nový záujemca:</strong> Jana Nováková</span><time datetime="PT10M">pred 10 min</time></div></li>
-      <li><span class="icon icon-file" aria-hidden="true"></span><div class="activity-row"><span>Uzavretá zmluva č. ZML-2025-042</span><time datetime="PT1H">pred 1 hod</time></div></li>
-      <li><span class="icon icon-card" aria-hidden="true"></span><div class="activity-row"><span>Prijatá platba 120 € (ZML-2025-039)</span><time datetime="PT2H">pred 2 hod</time></div></li>
-      <li><span class="icon icon-wrench" aria-hidden="true"></span><div class="activity-row"><span>Servisný požiadavok na bicykel #BK-017</span><time datetime="PT3H">pred 3 hod</time></div></li>
-      <li><span class="icon icon-mail" aria-hidden="true"></span><div class="activity-row"><span>Odoslaná správa: Končiaci sa prenájom</span><time datetime="PT4H">pred 4 hod</time></div></li>
-    </ul>
+    <partial name="_PrototypeActivityList" model="PrototypeActivity.Recent.Take(5)" />
   </section>
   <section class="panel" aria-labelledby="contracts-heading">
     <header>
@@ -36,11 +35,22 @@
       <table aria-labelledby="contracts-heading">
         <thead><tr><th scope="col">Nájomca</th><th scope="col">Bicykel</th><th scope="col">Dátum konca</th><th scope="col" aria-label="Zostávajúci čas"></th></tr></thead>
         <tbody>
-          <tr><td>Peter Kováč</td><td>BK-023</td><td><time datetime="2025-11-25">25. 11. 2025</time></td><td><span class="days">za 3 dni</span></td></tr>
-          <tr><td>Mária Horváthová</td><td>BK-031</td><td><time datetime="2025-11-27">27. 11. 2025</time></td><td><span class="days">za 5 dní</span></td></tr>
-          <tr><td>Jakub Dvořák</td><td>BK-018</td><td><time datetime="2025-11-30">30. 11. 2025</time></td><td><span class="days">za 8 dní</span></td></tr>
-          <tr><td>Lucia Benková</td><td>BK-027</td><td><time datetime="2025-12-02">02. 12. 2025</time></td><td><span class="days">za 10 dní</span></td></tr>
-          <tr><td>Daniel Králik</td><td>BK-035</td><td><time datetime="2025-12-05">05. 12. 2025</time></td><td><span class="days">za 13 dní</span></td></tr>
+          @foreach (var contract in upcomingContracts)
+          {
+            var days = contract.End.DayNumber - today.DayNumber;
+            var remaining = days switch
+            {
+                0 => "dnes",
+                1 => "zajtra",
+                <= 4 => $"za {days} dni",
+                _ => $"za {days} dní"
+            };
+            <tr>
+              <td>@contract.Tenant</td><td>@contract.Bicycle</td>
+              <td><time datetime="@contract.End.ToString("yyyy-MM-dd")">@contract.End.ToString("d. M. yyyy")</time></td>
+              <td><span class="days">@remaining</span></td>
+            </tr>
+          }
         </tbody>
       </table>
     </div>
