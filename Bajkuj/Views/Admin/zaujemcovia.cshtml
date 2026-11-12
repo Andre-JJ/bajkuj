@@ -1,6 +1,58 @@
+@using System.Globalization
 @{
     ViewData["Title"] = "Záujemcovia – Bajkuj v meste";
+    var slovak = CultureInfo.GetCultureInfo("sk-SK");
+    var rentalsByApplicant = PrototypeContract.CreateMockContracts()
+        .OrderByDescending(contract => contract.Start)
+        .ToLookup(contract => contract.TenantId);
+    var applicants = rentalsByApplicant.Select(group => (Id: group.Key, Name: group.First().Tenant))
+        .Append((Id: 8, Name: "Eva Malá"))
+        .OrderBy(applicant => applicant.Name, StringComparer.Create(slovak, ignoreCase: true));
 }
 
 <div class="intro"><h1>Záujemcovia</h1></div>
-<section class="panel placeholder"><h2>Vitajte na stránke Záujemcovia.</h2><p>Obsah tejto stránky pripravujeme.</p></section>
+<ul class="applicant-list">
+    @foreach (var applicant in applicants)
+    {
+        var rentals = rentalsByApplicant[applicant.Id];
+
+        <li>
+            <details class="panel applicant">
+                <summary>@applicant.Name</summary>
+                @if (rentals.Any())
+                {
+                    <div class="table-wrap">
+                        <table>
+                            <caption class="applicant-caption">Prenájmy – @applicant.Name</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Číslo zmluvy</th>
+                                    <th scope="col">Bicykel</th>
+                                    <th scope="col">Od</th>
+                                    <th scope="col">Do</th>
+                                    <th scope="col">Stav zmluvy</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var rental in rentals)
+                                {
+                                    <tr>
+                                        <td>@rental.Number</td>
+                                        <td>@rental.Bicycle</td>
+                                        <td><time datetime="@rental.Start.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@rental.Start.ToString("d. M. yyyy", slovak)</time></td>
+                                        <td><time datetime="@rental.End.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@rental.End.ToString("d. M. yyyy", slovak)</time></td>
+                                        <td><span class="contract-status" data-status="@rental.Status">@rental.Status</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="applicant-empty">Zatiaľ bez prenájmov.</p>
+                }
+            </details>
+        </li>
+    }
+</ul>
