@@ -1,0 +1,37 @@
+@{
+    var page = ViewContext.RouteData.Values["page"] as string;
+    var returnUrl = Context.Request.Query["returnUrl"].ToString();
+}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] – Bajkuj v meste</title>
+    <link rel="icon" type="image/png" href="~/prototype/logo.png" asp-append-version="true">
+    <link rel="stylesheet" href="~/prototype/prototype.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/prototype/auth.css" asp-append-version="true">
+</head>
+<body class="auth-page">
+    <aside class="auth-brand" lang="sk">
+        <a asp-area="" asp-controller="Home" asp-action="Index" aria-label="Bajkuj v meste – domov">
+            <img class="brand-logo" src="~/prototype/logo.png" asp-append-version="true" alt="">
+            <span class="brand-name">BAJKUJ <span>V MESTE</span></span>
+        </a>
+        <p>Prenájom bicyklov do mesta</p>
+    </aside>
+    <main class="auth-main">
+        <div class="auth-card">
+            @RenderBody()
+            @if (page is not ("/Account/Login" or "/Account/LoginWith2fa" or "/Account/LoginWithRecoveryCode"))
+            {
+                <div class="auth-footer">
+                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl">Back to sign in</a>
+                </div>
+            }
+        </div>
+    </main>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

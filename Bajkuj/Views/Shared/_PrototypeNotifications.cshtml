@@ -1,0 +1,38 @@
+@model bool
+@{
+    var isAdmin = Model;
+    var today = PrototypeContract.Today;
+    var contracts = PrototypeContract.CreateMockContracts()
+        .Where(contract => isAdmin || contract.TenantId == PrototypeOperations.PreviewTenantId).ToList();
+    var upcoming = contracts.Where(contract => contract.Status == "Aktívna" && contract.End >= today && contract.End <= today.AddDays(7))
+        .OrderBy(contract => contract.End);
+    var ended = contracts.Where(contract => contract.Status == "Ukončená")
+        .OrderByDescending(contract => contract.End).Take(1);
+    var role = isAdmin ? "admin" : "user";
+}
+<details class="notification" data-notification-menu data-role="@role">
+    <summary aria-label="Oznámenia"><span class="icon icon-bell" aria-hidden="true"></span><span class="notification-dot" aria-hidden="true"></span></summary>
+    <section class="notification-panel" aria-label="Oznámenia">
+        <h2>Oznámenia</h2>
+        <ul>
+            @foreach (var contract in upcoming)
+            {
+                <li data-notification="renewal">
+                    <strong>@(isAdmin ? "Blíži sa koniec prenájmu" : "Chcete predĺžiť prenájom?")</strong>
+                    <p>@contract.Bicycle · koniec @contract.End.ToString("d. M. yyyy")</p>
+                    <a asp-route="prototype" asp-route-role="@role" asp-route-section="zmluvy" asp-fragment="@contract.Number">Otvoriť zmluvu</a>
+                </li>
+            }
+            @foreach (var contract in ended)
+            {
+                <li data-notification="ended">
+                    <strong>Prenájom sa skončil</strong>
+                    <p>@contract.Bicycle · skončil @contract.End.ToString("d. M. yyyy")</p>
+                    <a asp-route="prototype" asp-route-role="@role" asp-route-section="zmluvy" asp-fragment="@contract.Number">Otvoriť zmluvu</a>
+                </li>
+            }
+        </ul>
+        <p class="quiet" data-notification-empty hidden>Nemáte žiadne oznámenia.</p>
+        <a asp-route="prototype" asp-route-role="@role" asp-route-section="nastavenia">Nastavenia oznámení</a>
+    </section>
+</details>

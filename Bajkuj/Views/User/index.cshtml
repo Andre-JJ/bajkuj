@@ -1,10 +1,39 @@
 @{
     ViewData["Title"] = "Domov – Bajkuj v meste";
+    var tenantId = PrototypeOperations.PreviewTenantId;
+    var rental = PrototypeContract.CreateMockContracts().First(contract => contract.TenantId == tenantId && contract.Status == "Aktívna");
+    var payment = PrototypeOperations.Payments.First(item => item.TenantId == tenantId && item.Status == "Čaká na úhradu");
+    var service = PrototypeOperations.Services.First(item => item.TenantId == tenantId && item.Status != "Vyriešená");
+    var daysLeft = rental.End.DayNumber - PrototypeContract.Today.DayNumber;
 }
 
-<div class="intro"><h1>Domov</h1><p>Vitajte v Bajkuj v meste. Spravujte svoj prenájom na jednom mieste.</p></div>
+<div class="intro"><h1>Domov</h1><p>Vitajte, @rental.Tenant. Tu je prehľad vášho prenájmu.</p></div>
+<div class="user-overview">
+    <section class="panel content-panel record-card rental-highlight" aria-labelledby="active-rental">
+        <div class="record-heading"><span class="icon icon-bike" aria-hidden="true"></span><span class="contract-status" data-status="@rental.Status">@rental.Status</span></div>
+        <h2 id="active-rental">Aktuálny prenájom</h2>
+        <p class="rental-bike">@rental.Bicycle</p>
+        <p>Zmluva @rental.Number</p>
+        <dl class="preview-facts">
+            <div><dt>Vrátenie bicykla</dt><dd>@rental.End.ToString("d. M. yyyy") · zostávajú @daysLeft dni</dd></div>
+        </dl>
+        <a class="preview-action" asp-route="prototype" asp-route-role="user" asp-route-section="zmluvy" asp-fragment="@rental.Number">Otvoriť zmluvu</a>
+    </section>
+    <div class="preview-stack">
+        <section class="panel content-panel record-card">
+            <h2>Najbližšia platba</h2>
+            <p><strong>@PrototypeOperations.Money(payment.Amount)</strong> · splatnosť @PrototypeContract.Today.AddDays(payment.DueInDays).ToString("d. M. yyyy")</p>
+            <a asp-route="prototype" asp-route-role="user" asp-route-section="platby">Prehľad platieb</a>
+        </section>
+        <section class="panel content-panel record-card">
+            <h2>Stav servisu</h2>
+            <p>@service.Issue · @service.Status</p>
+            <a asp-route="prototype" asp-route-role="user" asp-route-section="servis">Detail požiadavky</a>
+        </section>
+    </div>
+</div>
 <div class="user-home">
-  <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="bicykle"><strong>Prezrieť bicykle</strong>Otvoriť →</a>
-  <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="zmluvy"><strong>Moje zmluvy</strong>Otvoriť →</a>
-  <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="platby"><strong>Moje platby</strong>Otvoriť →</a>
+    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="bicykle"><strong>Prezrieť bicykle</strong>Modely a dostupnosť</a>
+    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="komunikacia"><strong>Kontaktovať tím</strong>Správy o prenájme</a>
+    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="spatna-vazba"><strong>Pridať hodnotenie</strong>Spätná väzba k prenájmu</a>
 </div>

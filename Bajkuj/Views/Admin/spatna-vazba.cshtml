@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Spätná väzba – Bajkuj v meste";
+    var entries = PrototypeOperations.FeedbackEntries;
+}
+<div class="intro"><h1>Spätná väzba</h1><p>Hodnotenia a podnety od nájomcov</p></div>
+<div class="prototype-grid metric-grid">
+    <div class="panel content-panel metric"><span>Priemerné hodnotenie</span><strong>@entries.Average(entry => entry.Rating).ToString("0.0", System.Globalization.CultureInfo.GetCultureInfo("sk-SK")) / 5</strong></div>
+    <div class="panel content-panel metric"><span>Počet hodnotení</span><strong>@entries.Count</strong></div>
+    <div class="panel content-panel metric"><span>Nové podnety</span><strong>@entries.Count(entry => entry.Status == "Nová")</strong></div>
+</div>
+<ul class="prototype-grid">
+    @foreach (var entry in entries.OrderByDescending(entry => entry.Status == "Nová"))
+    {
+        <li class="panel content-panel record-card">
+            <div class="record-heading"><strong>@entry.Rating / 5</strong><span class="contract-status" data-status="@entry.Status">@entry.Status</span></div>
+            <h2>@entry.Topic</h2><p>@entry.Comment</p><p class="quiet">@entry.Tenant</p>
+        </li>
+    }
+</ul>
