@@ -1,0 +1,34 @@
+@model PrototypeContract
+@{
+    var payments = PrototypeOperations.Payments.Where(payment => payment.Contract == Model.Number).ToList();
+}
+<article class="agreement">
+    <p class="quiet">Vzorový dokument</p>
+    <h2>Zmluva o prenájme bicykla č. @Model.Number</h2>
+    <dl class="preview-facts">
+        <div><dt>Prenajímateľ</dt><dd>Bajkuj v meste</dd></div>
+        <div><dt>Nájomca</dt><dd>@Model.Tenant</dd></div>
+        <div><dt>Predmet prenájmu</dt><dd>Bicykel @Model.Bicycle</dd></div>
+        <div><dt>Doba prenájmu</dt><dd>@Model.Start.ToString("d. M. yyyy") – @Model.End.ToString("d. M. yyyy")</dd></div>
+        <div><dt>Stav zmluvy</dt><dd>@Model.Status</dd></div>
+    </dl>
+    <h3>Úhrada za prenájom</h3>
+    @if (payments.Count > 0)
+    {
+        <p>Suma podľa ukážkového rozpisu platieb je <strong>@PrototypeOperations.Money(payments.Sum(payment => payment.Amount))</strong>.</p>
+        <ul>
+            @foreach (var payment in payments)
+            {
+                <li>@payment.Reference · @PrototypeOperations.Money(payment.Amount) · @payment.Status</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>Výška nájomného a splatnosť sa dohodnú pred prevzatím bicykla.</p>
+    }
+    <h3>Prevzatie a vrátenie</h3>
+    <p>Pri prevzatí obe strany zaznamenajú stav bicykla a príslušenstva. Nájomca vráti bicykel na dohodnutom výdajnom mieste do konca prenájmu a nahlási zistené poškodenia.</p>
+    <h3>Podpisy</h3>
+    <div class="agreement-signatures"><span>Prenajímateľ</span><span>Nájomca</span></div>
+</article>

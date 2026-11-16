@@ -1,0 +1,58 @@
+@using System.Globalization
+@model IReadOnlyList<Bajkuj.Models.Bicykel>
+@{
+    ViewData["Title"] = "Bicykle – Bajkuj v meste";
+    Layout = "_PrototypeLayout";
+    var isAdmin = (string?)ViewData["PrototypeRole"] == "admin";
+    var slovak = CultureInfo.GetCultureInfo("sk-SK");
+}
+
+<div class="intro"><h1>Bicykle</h1><p>@(isAdmin ? "Evidencia vozového parku" : "Katalóg bicyklov a ich dostupnosť")</p></div>
+<div class="filter-bar">
+    <label for="bike-filter">Dostupnosť</label>
+    <select id="bike-filter" data-filter="bike-grid">
+        <option value="">Všetky bicykle (@Model.Count)</option>
+        <option value="dostupny">Dostupné</option>
+        <option value="prenajaty">Prenajaté</option>
+        <option value="v_servise">V servise</option>
+    </select>
+</div>
+<ul class="bike-grid" id="bike-grid">
+    @foreach (var bicykel in Model)
+    {
+        var status = bicykel.Stav switch
+        {
+            "dostupny" => "Dostupný",
+            "prenajaty" => "Prenajatý",
+            "v_servise" => "V servise",
+            _ => bicykel.Stav
+        };
+
+        <li data-filter-value="@bicykel.Stav">
+            <article class="panel bike-card">
+                <header>
+                    <span class="icon icon-bike" aria-hidden="true"></span>
+                    <h2>@bicykel.Model</h2>
+                </header>
+                <dl>
+                    @if (isAdmin)
+                    {
+                        <dt>Evidenčné číslo</dt>
+                        <dd>@bicykel.Id</dd>
+                    }
+                    <dt>Typ</dt>
+                    <dd>@bicykel.Typ</dd>
+                    <dt>Stav</dt>
+                    <dd><span class="bike-status" data-status="@bicykel.Stav">@status</span></dd>
+                    <dt>Cena za deň</dt>
+                    <dd>@bicykel.CenaZaDen.ToString("C", slovak)</dd>
+                    @if (isAdmin)
+                    {
+                        <dt>Dátum pridania</dt>
+                        <dd><time datetime="@bicykel.DatumPridania.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@bicykel.DatumPridania.ToString("d. M. yyyy", slovak)</time></dd>
+                    }
+                </dl>
+            </article>
+        </li>
+    }
+</ul>

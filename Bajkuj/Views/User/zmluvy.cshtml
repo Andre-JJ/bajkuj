@@ -1,6 +1,31 @@
 @{
     ViewData["Title"] = "Zmluvy – Bajkuj v meste";
+    var contracts = PrototypeContract.CreateMockContracts()
+        .Where(contract => contract.TenantId == PrototypeOperations.PreviewTenantId)
+        .OrderByDescending(contract => contract.Start).ToList();
 }
-
-<div class="intro"><h1>Zmluvy</h1></div>
-<section class="panel placeholder"><h2>Vitajte na stránke Zmluvy.</h2><p>Obsah tejto stránky pripravujeme.</p></section>
+<div class="intro"><h1>Zmluvy</h1><p>Aktuálne prenájmy, termíny vrátenia a história zmlúv</p></div>
+<div class="user-overview">
+    <div class="preview-stack">
+        @foreach (var contract in contracts)
+        {
+            <article class="panel content-panel record-card">
+                <div class="record-heading"><span class="quiet">@contract.Number</span><span class="contract-status" data-status="@contract.Status">@contract.Status</span></div>
+                <h2>Prenájom bicykla @contract.Bicycle</h2>
+                <p>@contract.Start.ToString("d. M. yyyy") – @contract.End.ToString("d. M. yyyy")</p>
+                <details class="disclosure agreement-disclosure" id="@contract.Number">
+                    <summary>Zobraziť vzor zmluvy</summary>
+                    <div class="disclosure-body"><partial name="_PrototypeAgreement" model="contract" /></div>
+                </details>
+            </article>
+        }
+    </div>
+    <aside class="panel content-panel record-card rental-help">
+        <h2>Pred koncom prenájmu</h2>
+        <p>Potrebujete bicykel dlhšie? V správe uveďte číslo zmluvy a navrhovaný nový termín vrátenia.</p>
+        <a asp-route="prototype" asp-route-role="user" asp-route-section="komunikacia">Otvoriť komunikáciu</a>
+        <h2>Úhrady</h2>
+        <p>Splatnosť a stav úhrad nájdete v prehľade platieb.</p>
+        <a asp-route="prototype" asp-route-role="user" asp-route-section="platby">Moje platby</a>
+    </aside>
+</div>

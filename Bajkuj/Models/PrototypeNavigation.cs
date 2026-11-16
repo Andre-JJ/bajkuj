@@ -8,11 +8,13 @@ public record PrototypeNavigation(string Section, string Label, string Icon, boo
         new("zaujemcovia", "Záujemcovia", "people"),
         new("bicykle", "Bicykle", "bike"),
         new("najomcovia", "Nájomcovia", "person"),
+        new("crm", "CRM", "people"),
         new("zmluvy", "Zmluvy", "file"),
         new("platby", "Platby", "card"),
         new("servis", "Servis", "wrench"),
         new("komunikacia", "Komunikácia", "mail"),
         new("prehlady", "Prehľady", "chart"),
+        new("spatna-vazba", "Spätná väzba", "mail"),
         new("nastavenia", "Nastavenia", "settings"),
         new("aktivita", "Posledná aktivita", "history", ShowInMenu: false)
     ];
@@ -25,6 +27,7 @@ public record PrototypeNavigation(string Section, string Label, string Icon, boo
         new("platby", "Platby", "card"),
         new("servis", "Servis", "wrench"),
         new("komunikacia", "Komunikácia", "mail"),
+        new("spatna-vazba", "Spätná väzba", "mail"),
         new("nastavenia", "Nastavenia", "settings")
     ];
 }

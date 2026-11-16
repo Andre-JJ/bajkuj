@@ -1,6 +1,19 @@
 @{
     ViewData["Title"] = "Prehľady – Bajkuj v meste";
+    var contracts = PrototypeContract.CreateMockContracts();
+    var payments = PrototypeOperations.Payments;
 }
-
-<div class="intro"><h1>Prehľady</h1></div>
-<section class="panel placeholder"><h2>Vitajte na stránke Prehľady.</h2><p>Obsah tejto stránky pripravujeme.</p></section>
+<div class="intro"><h1>Prehľady</h1><p>Súhrn ukážkových prenájmov, platieb a servisu</p></div>
+<div class="prototype-grid metric-grid">
+    <div class="panel content-panel metric"><span>Aktívne prenájmy</span><strong>@contracts.Count(item => item.Status == "Aktívna")</strong></div>
+    <div class="panel content-panel metric"><span>Uhradené platby</span><strong>@PrototypeOperations.Money(payments.Where(item => item.Status == "Uhradená").Sum(item => item.Amount))</strong></div>
+    <div class="panel content-panel metric"><span>Otvorený servis</span><strong>@PrototypeOperations.Services.Count(item => item.Status != "Vyriešená")</strong></div>
+</div>
+<section class="panel content-panel record-card">
+    <h2>Zmluvy podľa stavu</h2>
+    @foreach (var group in contracts.GroupBy(item => item.Status))
+    {
+        <div class="report-row"><span>@group.Key</span><meter aria-label="@group.Key" min="0" max="@contracts.Count" value="@group.Count()"></meter><strong>@group.Count()</strong></div>
+    }
+    <div class="preview-links"><a asp-route="prototype" asp-route-role="admin" asp-route-section="zmluvy">Všetky zmluvy</a><a asp-route="prototype" asp-route-role="admin" asp-route-section="platby">Prehľad platieb</a></div>
+</section>

@@ -1,3 +1,8 @@
 ﻿@{
-    Layout = "/Views/Shared/_Layout.cshtml";
+    var page = ViewContext.RouteData.Values["page"] as string;
+    var isAccountFlow = page?.StartsWith("/Account/", StringComparison.OrdinalIgnoreCase) == true
+        && !page.StartsWith("/Account/Manage/", StringComparison.OrdinalIgnoreCase);
+    Layout = isAccountFlow
+        ? "/Views/Shared/_AuthLayout.cshtml"
+        : "/Views/Shared/_Layout.cshtml";
 }

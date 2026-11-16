@@ -15,17 +15,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewData["Title"]</title>
-    <link rel="icon" type="image/png" href="~/prototype/logo.png">
+    <link rel="icon" type="image/png" href="~/prototype/logo.png" asp-append-version="true">
     <link rel="stylesheet" href="~/prototype/prototype.css" asp-append-version="true">
+    <script src="~/prototype/prototype.js" asp-append-version="true" defer></script>
 </head>
 <body>
     <div class="layout">
         <aside class="sidebar">
             <div class="brand">
-                <img class="brand-logo" src="~/prototype/logo.png" alt="">
+                <img class="brand-logo" src="~/prototype/logo.png" asp-append-version="true" alt="">
                 <p class="brand-name">BAJKUJ <span>V MESTE</span></p>
             </div>
-            <nav aria-label="Hlavná navigácia">
+            <button class="mobile-menu" type="button" aria-expanded="true" aria-controls="prototype-navigation" hidden>Menu · @(navigation.FirstOrDefault(item => item.Section == section)?.Label)</button>
+            <nav id="prototype-navigation" aria-label="Hlavná navigácia">
                 <ul class="menu">
                     @foreach (var item in navigation.Where(item => item.ShowInMenu))
                     {
@@ -58,7 +60,7 @@
         </aside>
         <div class="workspace">
             <header class="topbar">
-                <span class="notification" role="img" aria-label="Nové oznámenie"><span class="icon icon-bell" aria-hidden="true"></span></span>
+                <partial name="_PrototypeNotifications" model="isAdminPreview" />
                 <span class="topbar-divider" aria-hidden="true"></span>
                 <div class="account">
                     <span class="icon icon-account" aria-hidden="true"></span>

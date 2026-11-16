@@ -1,0 +1,37 @@
+@{
+    var isAdmin = (string?)ViewData["PrototypeRole"] == "admin";
+    var payments = PrototypeOperations.Payments
+        .Where(payment => isAdmin || payment.TenantId == PrototypeOperations.PreviewTenantId).ToList();
+    var today = PrototypeContract.Today;
+}
+<div class="intro"><h1>Platby</h1><p>@(isAdmin ? "Úhrady a splatnosti prenájmov" : "Vaše úhrady a najbližšie splatnosti")</p></div>
+<div class="prototype-grid metric-grid">
+    @foreach (var status in new[] { "Uhradená", "Čaká na úhradu", "Po splatnosti" })
+    {
+        <div class="panel content-panel metric"><span>@status</span><strong>@PrototypeOperations.Money(payments.Where(payment => payment.Status == status).Sum(payment => payment.Amount))</strong></div>
+    }
+</div>
+<div class="filter-bar">
+    <label for="payment-filter">Stav platby</label>
+    <select id="payment-filter" data-filter="payment-rows" data-empty="payment-empty">
+        <option value="">Všetky platby</option><option>Uhradená</option><option>Čaká na úhradu</option><option>Po splatnosti</option>
+    </select>
+</div>
+<section class="panel content-panel">
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Prehľad platieb">
+        <table class="preview-table">
+            <thead><tr><th scope="col">Platba</th>@if (isAdmin) { <th scope="col">Nájomca</th> }<th scope="col">Zmluva</th><th scope="col">Splatnosť</th><th scope="col">Spôsob</th><th scope="col">Suma</th><th scope="col">Stav</th></tr></thead>
+            <tbody id="payment-rows">
+                @foreach (var payment in payments)
+                {
+                    <tr data-filter-value="@payment.Status">
+                        <td>@payment.Reference</td>@if (isAdmin) { <td>@payment.Tenant</td> }<td>@payment.Contract</td>
+                        <td>@today.AddDays(payment.DueInDays).ToString("d. M. yyyy")</td><td>@payment.Method</td>
+                        <td>@PrototypeOperations.Money(payment.Amount)</td><td><span class="contract-status" data-status="@payment.Status">@payment.Status</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p id="payment-empty" class="quiet" hidden>V tomto stave nie sú žiadne platby.</p>
+</section>

@@ -33,3 +33,13 @@
         </table>
     </div>
 </section>
+<section class="preview-stack agreement-list" aria-labelledby="agreement-heading">
+    <h2 id="agreement-heading">Náhľady zmlúv</h2>
+    @foreach (var contract in contracts)
+    {
+        <details class="panel disclosure" id="@contract.Number">
+            <summary>@contract.Number · @contract.Tenant</summary>
+            <div class="disclosure-body"><partial name="_PrototypeAgreement" model="contract" /></div>
+        </details>
+    }
+</section>
