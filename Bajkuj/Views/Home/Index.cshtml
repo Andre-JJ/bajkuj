@@ -1,63 +1,87 @@
 @{
-    Layout = "_PrototypeLayout";
-    ViewData["Title"] = "Dashboard – Bajkuj v meste";
-    var today = PrototypeContract.Today;
-    var upcomingContracts = PrototypeContract.CreateMockContracts()
-        .Where(contract => contract.Status == "Aktívna" && contract.End >= today)
-        .OrderBy(contract => contract.End)
-        .Take(5);
+    Layout = null;
+    ViewData["Title"] = "Bajkuj v meste – prenájom bicyklov";
+    var userHome = Url.RouteUrl("prototype", new { role = "user", section = "index" });
 }
-
-<div class="intro">
-  <h1>Dashboard</h1>
-  <p>Prehľad dôležitých informácií o systéme.</p>
-</div>
-<ul class="stats" aria-label="Štatistiky">
-  <li class="stat"><span class="stat-icon"><span class="icon icon-bike" aria-hidden="true"></span></span><div><strong>120</strong><p>Všetky bicykle</p></div></li>
-  <li class="stat"><span class="stat-icon"><span class="icon icon-bike" aria-hidden="true"></span></span><div><strong>78</strong><p>Dostupných</p></div></li>
-  <li class="stat"><span class="stat-icon"><span class="icon icon-bike" aria-hidden="true"></span></span><div><strong>42</strong><p>Prenajatých</p></div></li>
-  <li class="stat"><span class="stat-icon"><span class="icon icon-people people-icon" aria-hidden="true"></span></span><div><strong>12</strong><p>Čaká na schválenie</p></div></li>
-</ul>
-<div class="panels">
-  <section class="panel" aria-labelledby="activity-heading">
-    <header>
-      <span class="icon icon-history" aria-hidden="true"></span><h2 id="activity-heading">Posledná aktivita</h2>
-      <a class="all" asp-route="prototype" asp-route-role="admin" asp-route-section="aktivita">Zobraziť všetko <span class="icon icon-arrow" aria-hidden="true"></span></a>
+<!doctype html>
+<html lang="sk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Bajkuj v meste. Spoznajte prenájom bicyklov a prezrite si ukážku zákazníckeho účtu aj administrácie.">
+    <title>@ViewData["Title"]</title>
+    <link rel="icon" type="image/png" href="~/prototype/logo.png" asp-append-version="true">
+    <link rel="stylesheet" href="~/prototype/prototype.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/prototype/landing.css" asp-append-version="true">
+</head>
+<body class="landing">
+    <a class="skip-link" href="#content">Preskočiť na obsah</a>
+    <header class="landing-header">
+        <a class="landing-brand" asp-controller="Home" asp-action="Index" aria-label="Bajkuj v meste – úvod">
+            <img src="~/prototype/logo.png" asp-append-version="true" alt="">
+            <span>BAJKUJ <span>V MESTE</span></span>
+        </a>
+        <nav aria-label="Hlavná navigácia">
+            <a href="#ako-to-funguje">Ako to funguje</a>
+            <a href="#ukazka">Ukážka aplikácie</a>
+            <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@userHome">Prihlásiť sa</a>
+            <a class="landing-button" asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@userHome">Vytvoriť účet</a>
+        </nav>
     </header>
-    <partial name="_PrototypeActivityList" model="PrototypeActivity.Recent.Take(5)" />
-  </section>
-  <section class="panel" aria-labelledby="contracts-heading">
-    <header>
-      <span class="icon icon-calendar" aria-hidden="true"></span><h2 id="contracts-heading">Nadchádzajúce konce zmlúv</h2>
-      <a class="all" asp-route="prototype" asp-route-role="admin" asp-route-section="zmluvy">Zobraziť všetko <span class="icon icon-arrow" aria-hidden="true"></span></a>
-    </header>
-    <div class="table-wrap">
-      <table aria-labelledby="contracts-heading">
-        <thead><tr><th scope="col">Nájomca</th><th scope="col">Bicykel</th><th scope="col">Dátum konca</th><th scope="col" aria-label="Zostávajúci čas"></th></tr></thead>
-        <tbody>
-          @foreach (var contract in upcomingContracts)
-          {
-            var days = contract.End.DayNumber - today.DayNumber;
-            var remaining = days switch
-            {
-                0 => "dnes",
-                1 => "zajtra",
-                <= 4 => $"za {days} dni",
-                _ => $"za {days} dní"
-            };
-            <tr>
-              <td>@contract.Tenant</td><td>@contract.Bicycle</td>
-              <td><time datetime="@contract.End.ToString("yyyy-MM-dd")">@contract.End.ToString("d. M. yyyy")</time></td>
-              <td><span class="days">@remaining</span></td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </section>
-</div>
-<section class="status" aria-labelledby="status-heading">
-  <span class="status-icon"><span class="icon icon-info" aria-hidden="true"></span></span>
-  <div><h2 id="status-heading">Všetko funguje tak, ako má!</h2><p>Systém je aktuálne bez upozornení.</p></div>
-  <div class="skyline" aria-hidden="true"></div>
-</section>
+    <main id="content">
+        <section class="landing-hero" aria-labelledby="hero-heading">
+            <div>
+                <h1 id="hero-heading">Mesto je bližšie.<br><span>Nasadnite na bicykel.</span></h1>
+                <p>Bicykel na cestu do práce aj voľný čas. V účte nájdete svoje prenájmy, zmluvy a platby na jednom mieste.</p>
+                <div class="landing-actions">
+                    <a class="landing-button" asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@userHome">Začať registráciou</a>
+                    <a class="landing-secondary" asp-route="prototype" asp-route-role="user" asp-route-section="bicykle">Prezrieť ukážkový katalóg →</a>
+                </div>
+            </div>
+            <aside class="landing-sample" aria-labelledby="sample-heading">
+                <p class="sample-label">Ukážka zákazníckeho účtu</p>
+                <div class="sample-bike"><span class="icon icon-bike" aria-hidden="true"></span></div>
+                <h2 id="sample-heading">Váš prenájom pod kontrolou</h2>
+                <ul>
+                    <li>Zmluva a termín vrátenia</li>
+                    <li>Prehľad úhrad a splatností</li>
+                    <li>Servis a správy s tímom</li>
+                </ul>
+                <a href="@userHome">Otvoriť zákaznícku ukážku →</a>
+            </aside>
+        </section>
+        <section class="landing-section" id="ako-to-funguje" aria-labelledby="how-heading">
+            <h2 id="how-heading">Od výberu po vrátenie</h2>
+            <div class="landing-steps">
+                <article><h3>Vyberte si bicykel</h3><p>Prezrite si modely, typy bicyklov a ich dostupnosť v ukážkovom katalógu.</p></article>
+                <article><h3>Majte prehľad o prenájme</h3><p>V zákazníckom účte si pozrite zmluvu, termíny a stav platieb.</p></article>
+                <article><h3>Zostaňte v kontakte</h3><p>Pred koncom prenájmu otvorte komunikáciu s tímom alebo skontrolujte priebeh servisu.</p></article>
+            </div>
+        </section>
+        <section class="landing-section landing-previews" id="ukazka" aria-labelledby="preview-heading">
+            <div class="landing-section-intro">
+                <h2 id="preview-heading">Prezrite si aplikáciu</h2>
+                <p>Vyberte si pohľad, ktorý chcete preskúmať. Ukážky obsahujú vzorové údaje a otvoria sa bez prihlásenia.</p>
+            </div>
+            <div class="landing-preview-grid">
+                <article>
+                    <span class="icon icon-person" aria-hidden="true"></span>
+                    <h3>Zákaznícky účet</h3>
+                    <p>Prenájmy, zmluvy, platby, servis a oznámenia zákazníka Petra Kováča.</p>
+                    <a class="landing-button" href="@userHome">Ukážka zákazníka</a>
+                </article>
+                <article>
+                    <span class="icon icon-chart" aria-hidden="true"></span>
+                    <h3>Administrácia</h3>
+                    <p>Správa bicyklov, kontakty v CRM, nájomcovia a prehľady prevádzky.</p>
+                    <a class="landing-secondary" asp-route="prototype" asp-route-role="admin" asp-route-section="index">Ukážka administrácie →</a>
+                </article>
+            </div>
+        </section>
+    </main>
+    <footer class="landing-footer">
+        <p>Bajkuj v meste</p>
+        <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@userHome">Už máte účet? Prihláste sa</a>
+    </footer>
+</body>
+</html>
