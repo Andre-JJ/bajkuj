@@ -30,11 +30,6 @@ public class PrototypeController : Controller
             return NotFound();
         }
 
-        if (role == "admin" && section == "index")
-        {
-            return RedirectToAction(nameof(HomeController.Index), "Home");
-        }
-
         ViewData["PrototypeRole"] = role;
         ViewData["PrototypeSection"] = section;
 

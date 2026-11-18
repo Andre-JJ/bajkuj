@@ -1,0 +1,65 @@
+@{
+    Layout = "_PrototypeLayout";
+    ViewData["PrototypeRole"] = "admin";
+    ViewData["PrototypeSection"] = "index";
+    ViewData["Title"] = "Dashboard – Bajkuj v meste";
+    var today = PrototypeContract.Today;
+    var upcomingContracts = PrototypeContract.CreateMockContracts()
+        .Where(contract => contract.Status == "Aktívna" && contract.End >= today)
+        .OrderBy(contract => contract.End)
+        .Take(5);
+}
+
+<div class="intro">
+  <h1>Dashboard</h1>
+  <p>Prehľad dôležitých informácií o systéme.</p>
+</div>
+<ul class="stats" aria-label="Štatistiky">
+  <li class="stat"><span class="stat-icon"><span class="icon icon-bike" aria-hidden="true"></span></span><div><strong>120</strong><p>Všetky bicykle</p></div></li>
+  <li class="stat"><span class="stat-icon"><span class="icon icon-bike" aria-hidden="true"></span></span><div><strong>78</strong><p>Dostupných</p></div></li>
+  <li class="stat"><span class="stat-icon"><span class="icon icon-bike" aria-hidden="true"></span></span><div><strong>42</strong><p>Prenajatých</p></div></li>
+  <li class="stat"><span class="stat-icon"><span class="icon icon-people people-icon" aria-hidden="true"></span></span><div><strong>12</strong><p>Čaká na schválenie</p></div></li>
+</ul>
+<div class="panels">
+  <section class="panel" aria-labelledby="activity-heading">
+    <header>
+      <span class="icon icon-history" aria-hidden="true"></span><h2 id="activity-heading">Posledná aktivita</h2>
+      <a class="all" asp-route="prototype" asp-route-role="admin" asp-route-section="aktivita">Zobraziť všetko <span class="icon icon-arrow" aria-hidden="true"></span></a>
+    </header>
+    <partial name="_PrototypeActivityList" model="PrototypeActivity.Recent.Take(5)" />
+  </section>
+  <section class="panel" aria-labelledby="contracts-heading">
+    <header>
+      <span class="icon icon-calendar" aria-hidden="true"></span><h2 id="contracts-heading">Nadchádzajúce konce zmlúv</h2>
+      <a class="all" asp-route="prototype" asp-route-role="admin" asp-route-section="zmluvy">Zobraziť všetko <span class="icon icon-arrow" aria-hidden="true"></span></a>
+    </header>
+    <div class="table-wrap">
+      <table aria-labelledby="contracts-heading">
+        <thead><tr><th scope="col">Nájomca</th><th scope="col">Bicykel</th><th scope="col">Dátum konca</th><th scope="col" aria-label="Zostávajúci čas"></th></tr></thead>
+        <tbody>
+          @foreach (var contract in upcomingContracts)
+          {
+            var days = contract.End.DayNumber - today.DayNumber;
+            var remaining = days switch
+            {
+                0 => "dnes",
+                1 => "zajtra",
+                <= 4 => $"za {days} dni",
+                _ => $"za {days} dní"
+            };
+            <tr>
+              <td>@contract.Tenant</td><td>@contract.Bicycle</td>
+              <td><time datetime="@contract.End.ToString("yyyy-MM-dd")">@contract.End.ToString("d. M. yyyy")</time></td>
+              <td><span class="days">@remaining</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<section class="status" aria-labelledby="status-heading">
+  <span class="status-icon"><span class="icon icon-info" aria-hidden="true"></span></span>
+  <div><h2 id="status-heading">Všetko funguje tak, ako má!</h2><p>Systém je aktuálne bez upozornení.</p></div>
+  <div class="skyline" aria-hidden="true"></div>
+</section>

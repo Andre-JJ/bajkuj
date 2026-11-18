@@ -7,7 +7,7 @@
     var userSection = PrototypeNavigation.User.Any(item => item.Section == section) ? section : "index";
     var adminPreviewUrl = section != "index"
         ? Url.RouteUrl("prototype", new { role = "admin", section })
-        : Url.Action("Index", "Home");
+        : Url.RouteUrl("prototype", new { role = "admin", section = "index" });
 }
 <!doctype html>
 <html lang="sk">
@@ -22,18 +22,16 @@
 <body>
     <div class="layout">
         <aside class="sidebar">
-            <div class="brand">
+            <a class="brand brand-home" asp-controller="Home" asp-action="Index" aria-label="Bajkuj v meste – úvodná stránka">
                 <img class="brand-logo" src="~/prototype/logo.png" asp-append-version="true" alt="">
                 <p class="brand-name">BAJKUJ <span>V MESTE</span></p>
-            </div>
+            </a>
             <button class="mobile-menu" type="button" aria-expanded="true" aria-controls="prototype-navigation" hidden>Menu · @(navigation.FirstOrDefault(item => item.Section == section)?.Label)</button>
             <nav id="prototype-navigation" aria-label="Hlavná navigácia">
                 <ul class="menu">
                     @foreach (var item in navigation.Where(item => item.ShowInMenu))
                     {
-                        var href = isAdminPreview && item.Section == "index"
-                            ? Url.Action("Index", "Home")
-                            : Url.RouteUrl("prototype", new { role, section = item.Section });
+                        var href = Url.RouteUrl("prototype", new { role, section = item.Section });
                         <li>
                             <a href="@href" aria-current="@(item.Section == section ? "page" : null)" aria-label="@item.Label">
                                 <span class="icon icon-@item.Icon" aria-hidden="true"></span><span>@item.Label</span>
@@ -60,6 +58,7 @@
         </aside>
         <div class="workspace">
             <header class="topbar">
+                <a class="landing-return" asp-controller="Home" asp-action="Index">Úvodná stránka</a>
                 <partial name="_PrototypeNotifications" model="isAdminPreview" />
                 <span class="topbar-divider" aria-hidden="true"></span>
                 <div class="account">
