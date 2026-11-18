@@ -58,10 +58,10 @@
         </aside>
         <div class="workspace">
             <header class="topbar">
-                <a class="landing-return" asp-controller="Home" asp-action="Index">Úvodná stránka</a>
                 <partial name="_PrototypeNotifications" model="isAdminPreview" />
                 <span class="topbar-divider" aria-hidden="true"></span>
                 <div class="account">
+                    <span class="account-name" data-profile-name>@(isAdminPreview ? "Martin Novotný" : "Peter Kováč")</span>
                     <span class="icon icon-account" aria-hidden="true"></span>
                     <details class="role-picker">
                         <summary>Ukážka roly · @(isAdminPreview ? "Admin" : "Používateľ")</summary>

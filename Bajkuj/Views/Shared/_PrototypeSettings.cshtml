@@ -5,12 +5,16 @@
 <div class="intro"><h1>Nastavenia</h1><p>Profil a predvoľby oznámení</p></div>
 <div class="prototype-grid">
     <section class="panel content-panel record-card">
-        <h2>@(isAdmin ? "Profil prevádzky" : "Môj profil")</h2>
-        <dl class="preview-facts">
-            <div><dt>@(isAdmin ? "Názov" : "Meno a priezvisko")</dt><dd>@(isAdmin ? "Bajkuj v meste" : "Peter Kováč")</dd></div>
-            <div><dt>E-mail</dt><dd>@(isAdmin ? "podpora@example.com" : "peter.kovac@example.com")</dd></div>
-            <div><dt>Jazyk rozhrania</dt><dd>Slovenčina</dd></div>
-        </dl>
+        <h2>@(isAdmin ? "Profil administrátora" : "Môj profil")</h2>
+        <form class="preview-form" id="profile-preferences">
+            <label for="profile-name">Meno a priezvisko</label>
+            <input id="profile-name" name="displayName" type="text" value="@(isAdmin ? "Martin Novotný" : "Peter Kováč")" maxlength="80" required autocomplete="name">
+            <label for="profile-email">Kontaktný e-mail</label>
+            <input id="profile-email" name="contactEmail" type="email" value="@(isAdmin ? "martin.novotny@example.com" : "peter.kovac@example.com")" maxlength="254" required autocomplete="email">
+            <button type="submit">Uložiť profil</button>
+        </form>
+        <p class="quiet">Ukážkový profil sa uloží v tomto prehliadači. Prihlasovací účet sa spravuje samostatne.</p>
+        <p data-profile-status role="status"></p>
     </section>
     <section class="panel content-panel record-card">
         <h2>Oznámenia v aplikácii</h2>
@@ -18,6 +22,13 @@
         <form class="preview-form" id="notification-preferences" data-role="@role">
             <label class="preference-option"><input type="checkbox" name="renewal" checked> Pripomienky pred koncom prenájmu</label>
             <label class="preference-option"><input type="checkbox" name="ended" checked> Oznámenia o ukončených prenájmoch</label>
+            <label for="reminder-days">Pripomenúť koniec prenájmu</label>
+            <select id="reminder-days" name="reminderDays">
+                <option value="1">1 deň vopred</option>
+                <option value="3">3 dni vopred</option>
+                <option value="7" selected>7 dní vopred</option>
+                <option value="14">14 dní vopred</option>
+            </select>
             <button type="submit">Uložiť predvoľby</button>
         </form>
         <p class="quiet">Predvoľby sa ukladajú v tomto prehliadači.</p>

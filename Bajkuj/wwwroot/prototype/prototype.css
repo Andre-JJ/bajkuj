@@ -7,6 +7,7 @@
   --sidebar-width: 14.7rem;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; }
 h1, h2, p, ul { margin: 0; }
 ul { padding: 0; list-style: none; }
@@ -17,7 +18,6 @@ ul { padding: 0; list-style: none; }
 .brand-name { text-align: center; font-weight: 900; font-size: 1.94rem; line-height: 1; }
 .brand-name span { display: block; color: var(--yellow); }
 .brand-home { color: inherit; text-decoration: none; }
-.landing-return { margin-right: auto; color: inherit; font-size: .95rem; text-underline-offset: .2em; }
 .menu { padding-left: .38rem; }
 .menu a, .sign-out { display: flex; align-items: center; gap: 1.42rem; min-height: 3.45rem; color: inherit; text-decoration: none; font-size: 1.12rem; }
 button.sign-out { font-family: inherit; background: none; border-width: 1px 0 0; cursor: pointer; }
@@ -27,6 +27,7 @@ button.sign-out { font-family: inherit; background: none; border-width: 1px 0 0;
 .notification { position: relative; }
 .topbar-divider { height: 1.6rem; border-left: 1px solid #bdbdbd; }
 .account { display: flex; align-items: center; gap: .72rem; }
+.account-name { max-width: 12rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .95rem; }
 .account .icon:first-child { width: 2rem; height: 2rem; }
 main { padding: 1.85rem 1.65rem 3.25rem 2.15rem; }
 .intro { margin: 0 0 1.55rem .22rem; }
@@ -97,7 +98,7 @@ td:last-child { text-align: right; padding-left: 0; padding-right: .35rem; }
 .preview-links a { color: inherit; font-weight: 650; text-underline-offset: .2em; }
 .filter-bar { margin-bottom: 1rem; }
 .filter-bar label, .preview-form label { font-weight: 650; }
-.filter-bar select, .preview-form select, .preview-form textarea {
+.filter-bar select, .preview-form select, .preview-form textarea, .preview-form input:not([type="checkbox"]) {
   max-width: 100%;
   background: #fff;
   color: inherit;
