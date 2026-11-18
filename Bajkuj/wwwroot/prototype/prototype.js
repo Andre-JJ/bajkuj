@@ -19,14 +19,18 @@ updateNavigation();
 const notificationMenu = document.querySelector("[data-notification-menu]");
 const preferencesForm = document.getElementById("notification-preferences");
 const preferenceKey = "bajkuj-notifications-" + notificationMenu.dataset.role;
-const preferences = { renewal: true, ended: true };
+const preferences = { renewal: true, ended: true, reminderDays: 7 };
+const reminderDayOptions = [1, 3, 7, 14];
 
 try {
     const saved = JSON.parse(localStorage.getItem(preferenceKey));
-    for (const category of Object.keys(preferences)) {
+    for (const category of ["renewal", "ended"]) {
         if (typeof saved?.[category] === "boolean") {
             preferences[category] = saved[category];
         }
+    }
+    if (reminderDayOptions.includes(saved?.reminderDays)) {
+        preferences.reminderDays = saved.reminderDays;
     }
 } catch {
     // Use the defaults when local storage is unavailable.
@@ -35,7 +39,9 @@ try {
 function updateNotifications() {
     const items = [...notificationMenu.querySelectorAll("[data-notification]")];
     items.forEach((item) => {
-        item.hidden = !preferences[item.dataset.notification];
+        const outsideReminderWindow = item.dataset.notification === "renewal"
+            && Number(item.dataset.daysUntilEnd) > preferences.reminderDays;
+        item.hidden = !preferences[item.dataset.notification] || outsideReminderWindow;
     });
     const hasNotifications = items.some((item) => !item.hidden);
     notificationMenu.querySelector(".notification-dot").hidden = !hasNotifications;
@@ -43,6 +49,8 @@ function updateNotifications() {
 }
 
 if (preferencesForm) {
+    const reminderDays = document.getElementById("reminder-days");
+    reminderDays.value = String(preferences.reminderDays);
     const options = [...preferencesForm.querySelectorAll("input[type=checkbox]")];
     options.forEach((option) => {
         option.checked = preferences[option.name];
@@ -52,6 +60,7 @@ if (preferencesForm) {
         options.forEach((option) => {
             preferences[option.name] = option.checked;
         });
+        preferences.reminderDays = Number(reminderDays.value);
         const status = document.querySelector("[data-preferences-status]");
         try {
             localStorage.setItem(preferenceKey, JSON.stringify(preferences));
@@ -63,6 +72,51 @@ if (preferencesForm) {
     });
 }
 updateNotifications();
+
+const profileKey = "bajkuj-profile-" + notificationMenu.dataset.role;
+const profileForm = document.getElementById("profile-preferences");
+const profileName = document.getElementById("profile-name");
+const profileEmail = document.getElementById("profile-email");
+
+function showProfileName(name) {
+    document.querySelectorAll("[data-profile-name]").forEach((element) => {
+        element.textContent = name;
+    });
+}
+
+try {
+    const saved = JSON.parse(localStorage.getItem(profileKey));
+    if (typeof saved?.displayName === "string" && saved.displayName.trim() && saved.displayName.length <= 80) {
+        showProfileName(saved.displayName);
+        if (profileForm) {
+            profileName.value = saved.displayName;
+        }
+    }
+    if (profileForm && typeof saved?.contactEmail === "string" && saved.contactEmail.length <= 254) {
+        profileEmail.value = saved.contactEmail;
+    }
+} catch {
+    // Keep the preview profile when local storage is unavailable.
+}
+
+if (profileForm) {
+    profileForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        profileName.value = profileName.value.trim();
+        if (!profileForm.reportValidity()) {
+            return;
+        }
+        const profile = { displayName: profileName.value, contactEmail: profileEmail.value.trim() };
+        showProfileName(profile.displayName);
+        const status = document.querySelector("[data-profile-status]");
+        try {
+            localStorage.setItem(profileKey, JSON.stringify(profile));
+            status.textContent = "Ukážkový profil bol uložený.";
+        } catch {
+            status.textContent = "Profil platí na tejto stránke. Prehliadač ho nemohol uložiť.";
+        }
+    });
+}
 
 document.addEventListener("click", (event) => {
     if (!notificationMenu.contains(event.target)) {

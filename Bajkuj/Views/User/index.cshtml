@@ -7,7 +7,7 @@
     var daysLeft = rental.End.DayNumber - PrototypeContract.Today.DayNumber;
 }
 
-<div class="intro"><h1>Domov</h1><p>Vitajte, @rental.Tenant. Tu je prehľad vášho prenájmu.</p></div>
+<div class="intro"><h1>Domov</h1><p>Vitajte, <span data-profile-name>@rental.Tenant</span>. Tu je prehľad vášho prenájmu.</p></div>
 <div class="user-overview">
     <section class="panel content-panel record-card rental-highlight" aria-labelledby="active-rental">
         <div class="record-heading"><span class="icon icon-bike" aria-hidden="true"></span><span class="contract-status" data-status="@rental.Status">@rental.Status</span></div>

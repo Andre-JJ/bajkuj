@@ -4,7 +4,7 @@
     var today = PrototypeContract.Today;
     var contracts = PrototypeContract.CreateMockContracts()
         .Where(contract => isAdmin || contract.TenantId == PrototypeOperations.PreviewTenantId).ToList();
-    var upcoming = contracts.Where(contract => contract.Status == "Aktívna" && contract.End >= today && contract.End <= today.AddDays(7))
+    var upcoming = contracts.Where(contract => contract.Status == "Aktívna" && contract.End >= today && contract.End <= today.AddDays(14))
         .OrderBy(contract => contract.End);
     var ended = contracts.Where(contract => contract.Status == "Ukončená")
         .OrderByDescending(contract => contract.End).Take(1);
@@ -17,7 +17,7 @@
         <ul>
             @foreach (var contract in upcoming)
             {
-                <li data-notification="renewal">
+                <li data-notification="renewal" data-days-until-end="@(contract.End.DayNumber - today.DayNumber)">
                     <strong>@(isAdmin ? "Blíži sa koniec prenájmu" : "Chcete predĺžiť prenájom?")</strong>
                     <p>@contract.Bicycle · koniec @contract.End.ToString("d. M. yyyy")</p>
                     <a asp-route="prototype" asp-route-role="@role" asp-route-section="zmluvy" asp-fragment="@contract.Number">Otvoriť zmluvu</a>
