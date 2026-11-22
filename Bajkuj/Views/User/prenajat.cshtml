@@ -1,0 +1,63 @@
+@model BikeRentalForm
+@{
+    ViewData["Title"] = T("Prenajať bicykel");
+    var cardPaymentsAvailable = ViewData["CardPaymentsAvailable"] is true;
+    var localTestCheckout = ViewData["LocalTestCheckoutAvailable"] is true;
+}
+<div class="intro"><h1>@T("Prenajať bicykel")</h1><p>@Model.Bike.Model</p></div>
+<div class="checkout-grid">
+    <section class="panel content-panel record-card">
+        @if (Model.Bike.PhotoPath is string photo)
+        {
+            <a class="checkout-bike-photo" href="@Url.Content(photo)" data-bike-photo aria-label="@T("Zväčšiť fotografiu bicykla {0}", Model.Bike.Model)">
+                <img src="@Url.Content(photo)" alt="@Model.Bike.Model">
+            </a>
+        }
+        <dl class="preview-facts">
+            <div><dt>@T("Začiatok prenájmu")</dt><dd>@Model.StartDate.ToString("d")</dd></div>
+            <div><dt>@T("Cena za mesiac")</dt><dd>@PrototypeOperations.Money(Model.Bike.CenaZaMesiac)</dd></div>
+            <div><dt>@T("Cena za rok")</dt><dd>@PrototypeOperations.Money(Model.Bike.CenaZaRok)</dd></div>
+        </dl>
+        <form id="rental-plan" class="preview-form" asp-route="rent-bike" asp-route-id="@Model.Bike.Id" method="post" data-rental-form>
+            <div asp-validation-summary="ModelOnly" class="rental-notice" role="alert"></div>
+            <input type="hidden" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+            <label for="rental-term">@T("Dĺžka prenájmu")</label>
+            <select id="rental-term" name="term">
+                @foreach (var term in new[] { RentalTerm.Monthly, RentalTerm.Yearly })
+                {
+                    var plan = Model with { Term = term };
+                    <option value="@term" selected="@(term == Model.Term)" data-return-date="@plan.ReturnDate.ToString("d")"
+                            data-price="@PrototypeOperations.Money(plan.Price)">
+                        @T(term == RentalTerm.Monthly ? "Mesačný prenájom" : "Ročný prenájom")
+                    </option>
+                }
+            </select>
+            <dl class="preview-facts" aria-live="polite">
+                <div><dt>@T("Dátum vrátenia")</dt><dd data-rental-return>@Model.ReturnDate.ToString("d")</dd></div>
+                <div><dt>@T("Celková cena")</dt><dd data-rental-total>@PrototypeOperations.Money(Model.Price)</dd></div>
+            </dl>
+        </form>
+        <div class="preview-links"><a asp-route="prototype" asp-route-role="user" asp-route-section="bicykle">@T("Späť na bicykle")</a></div>
+    </section>
+    <section class="panel content-panel record-card">
+        <h2>@T(localTestCheckout ? "Testovacia platba" : "Platba kartou")</h2>
+        @if (TempData["RentalNotice"] is string notice)
+        {
+            <p class="rental-notice" role="status">@T(notice)</p>
+        }
+        @if (localTestCheckout)
+        {
+            <p>@T("Tento režim vytvorí testovací prenájom bez platby a bez údajov o karte.")</p>
+            <button class="preview-action" form="rental-plan" type="submit" name="testCheckout" value="true">@T("Potvrdiť testovací prenájom")</button>
+        }
+        else if (cardPaymentsAvailable)
+        {
+            <p>@T("Po výbere dĺžky prenájmu zadajte údaje o karte cez Stripe.")</p>
+            <button class="preview-action" form="rental-plan" type="submit">@T("Pokračovať k platbe")</button>
+        }
+        else
+        {
+            <p>@T("Platba kartou momentálne nie je dostupná.")</p>
+        }
+    </section>
+</div>

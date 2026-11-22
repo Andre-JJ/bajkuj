@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Domov – Bajkuj v meste";
+    ViewData["Title"] = T("Domov") + " – Bajkuj v meste";
     var tenantId = PrototypeOperations.PreviewTenantId;
     var rental = PrototypeContract.CreateMockContracts().First(contract => contract.TenantId == tenantId && contract.Status == "Aktívna");
     var payment = PrototypeOperations.Payments.First(item => item.TenantId == tenantId && item.Status == "Čaká na úhradu");
@@ -7,33 +7,44 @@
     var daysLeft = rental.End.DayNumber - PrototypeContract.Today.DayNumber;
 }
 
-<div class="intro"><h1>Domov</h1><p>Vitajte, <span data-profile-name>@rental.Tenant</span>. Tu je prehľad vášho prenájmu.</p></div>
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="intro"><h1>@T("Domov")</h1><p>@T("Vitajte, {0}!", AccountProfile.DisplayName(User))</p></div>
+    <div class="user-home">
+        <a class="panel" asp-route="my-rentals"><strong>@T("Moje prenájmy")</strong>@T("Aktívne prenájmy: {0} z 3", ViewData["ActiveRentals"] ?? 0)</a>
+        <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="bicykle"><strong>@T("Prezrieť bicykle")</strong>@T("Modely a dostupnosť")</a>
+        <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="komunikacia"><strong>@T("Kontaktovať tím")</strong>@T("Správy o prenájme")</a>
+    </div>
+    return;
+}
+
+<div class="intro"><h1>@T("Domov")</h1><p>@T("Vitajte,") <span data-profile-name>@rental.Tenant</span>@T(". Tu je prehľad vášho prenájmu.")</p></div>
 <div class="user-overview">
     <section class="panel content-panel record-card rental-highlight" aria-labelledby="active-rental">
-        <div class="record-heading"><span class="icon icon-bike" aria-hidden="true"></span><span class="contract-status" data-status="@rental.Status">@rental.Status</span></div>
-        <h2 id="active-rental">Aktuálny prenájom</h2>
+        <div class="record-heading"><span class="icon icon-bike" aria-hidden="true"></span><span class="contract-status" data-status="@rental.Status">@T(rental.Status)</span></div>
+        <h2 id="active-rental">@T("Aktuálny prenájom")</h2>
         <p class="rental-bike">@rental.Bicycle</p>
-        <p>Zmluva @rental.Number</p>
+        <p>@T("Zmluva") @rental.Number</p>
         <dl class="preview-facts">
-            <div><dt>Vrátenie bicykla</dt><dd>@rental.End.ToString("d. M. yyyy") · zostávajú @daysLeft dni</dd></div>
+            <div><dt>@T("Vrátenie bicykla")</dt><dd>@rental.End.ToString("d") · @T("zostávajú {0} dni", daysLeft)</dd></div>
         </dl>
-        <a class="preview-action" asp-route="prototype" asp-route-role="user" asp-route-section="zmluvy" asp-fragment="@rental.Number">Otvoriť zmluvu</a>
+        <a class="preview-action" asp-route="prototype" asp-route-role="user" asp-route-section="zmluvy" asp-fragment="@rental.Number">@T("Otvoriť zmluvu")</a>
     </section>
     <div class="preview-stack">
         <section class="panel content-panel record-card">
-            <h2>Najbližšia platba</h2>
-            <p><strong>@PrototypeOperations.Money(payment.Amount)</strong> · splatnosť @PrototypeContract.Today.AddDays(payment.DueInDays).ToString("d. M. yyyy")</p>
-            <a asp-route="prototype" asp-route-role="user" asp-route-section="platby">Prehľad platieb</a>
+            <h2>@T("Najbližšia platba")</h2>
+            <p><strong>@PrototypeOperations.Money(payment.Amount)</strong> · @T("splatnosť {0}", PrototypeContract.Today.AddDays(payment.DueInDays).ToString("d"))</p>
+            <a asp-route="prototype" asp-route-role="user" asp-route-section="platby">@T("Prehľad platieb")</a>
         </section>
         <section class="panel content-panel record-card">
-            <h2>Stav servisu</h2>
-            <p>@service.Issue · @service.Status</p>
-            <a asp-route="prototype" asp-route-role="user" asp-route-section="servis">Detail požiadavky</a>
+            <h2>@T("Stav servisu")</h2>
+            <p>@T(service.Issue) · @T(service.Status)</p>
+            <a asp-route="prototype" asp-route-role="user" asp-route-section="servis">@T("Detail požiadavky")</a>
         </section>
     </div>
 </div>
 <div class="user-home">
-    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="bicykle"><strong>Prezrieť bicykle</strong>Modely a dostupnosť</a>
-    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="komunikacia"><strong>Kontaktovať tím</strong>Správy o prenájme</a>
-    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="spatna-vazba"><strong>Pridať hodnotenie</strong>Spätná väzba k prenájmu</a>
+    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="bicykle"><strong>@T("Prezrieť bicykle")</strong>@T("Modely a dostupnosť")</a>
+    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="komunikacia"><strong>@T("Kontaktovať tím")</strong>@T("Správy o prenájme")</a>
+    <a class="panel" asp-route="prototype" asp-route-role="user" asp-route-section="spatna-vazba"><strong>@T("Pridať hodnotenie")</strong>@T("Spätná väzba k prenájmu")</a>
 </div>

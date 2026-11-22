@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Bajkuj.Data;
+using Bajkuj.Localization;
+using Bajkuj.Models;
+using Bajkuj.Payments;
+using Microsoft.AspNetCore.Localization;
 
 DotNetEnv.Env.TraversePath().Load();
 
@@ -13,11 +17,33 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddClaimsPrincipalFactory<AccountClaimsFactory>();
+builder.Services.AddControllersWithViews(options => options.Filters.Add<LocalizedAccountErrors>());
+builder.Services.AddHttpClient<StripeCheckout>(client =>
+{
+    client.BaseAddress = new Uri("https://api.stripe.com/v1/");
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture(AppText.Slovak)
+        .AddSupportedCultures(AppText.Slovak, AppText.English)
+        .AddSupportedUICultures(AppText.Slovak, AppText.English);
+    options.RequestCultureProviders.Clear();
+    options.RequestCultureProviders.Add(new CookieRequestCultureProvider());
+});
 
 var app = builder.Build();
+if (args is ["--grant-admin", var email])
+{
+    await AdminAccounts.GrantAsync(app.Services, email);
+    return;
+}
+
+app.UseRequestLocalization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

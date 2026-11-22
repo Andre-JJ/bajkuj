@@ -1,0 +1,42 @@
+@page
+@model LoginModel
+@{
+    ViewData["Title"] = T("Prihlásiť sa");
+}
+<h1>@ViewData["Title"]</h1>
+<form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="form-group">
+        <label asp-for="Input.Email">@T("E-mail")</label>
+        <input asp-for="Input.Email" class="form-control" autocomplete="username" required>
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.Password">@T("Heslo")</label>
+        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" required>
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+    <div class="checkbox">
+        <label><input asp-for="Input.RememberMe"> @T("Zapamätať si ma")</label>
+    </div>
+    <button type="submit">@T("Prihlásiť sa")</button>
+    <div>
+        <p><a asp-page="./ForgotPassword" asp-route-returnUrl="@Model.ReturnUrl">@T("Zabudli ste heslo?")</a></p>
+        <p><a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">@T("Vytvoriť účet")</a></p>
+        <p><a asp-page="./ResendEmailConfirmation" asp-route-returnUrl="@Model.ReturnUrl">@T("Znova odoslať potvrdzovací e-mail")</a></p>
+    </div>
+</form>
+@if (Model.ExternalLogins is { Count: > 0 })
+{
+    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <h2>@T("Prihlásenie cez inú službu")</h2>
+        @foreach (var provider in Model.ExternalLogins)
+        {
+            <button type="submit" name="provider" value="@provider.Name">@provider.DisplayName</button>
+        }
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

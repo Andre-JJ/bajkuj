@@ -2,17 +2,17 @@
     var isAdmin = (string?)ViewData["PrototypeRole"] == "admin";
     var messages = PrototypeOperations.Messages.Where(message => isAdmin || message.Tenant == "Peter Kováč");
 }
-<div class="intro"><h1>Komunikácia</h1><p>@(isAdmin ? "Konverzácie so záujemcami a nájomcami" : "Vaše správy o prenájme")</p></div>
+<div class="intro"><h1>@T("Komunikácia")</h1><p>@T(isAdmin ? "Konverzácie so záujemcami a nájomcami" : "Vaše správy o prenájme")</p></div>
 <div class="preview-stack">
     @foreach (var message in messages)
     {
         <details class="panel disclosure">
-            <summary>@message.Subject <span class="contract-status" data-status="@message.Status">@message.Status</span></summary>
+            <summary>@T(message.Subject) <span class="contract-status" data-status="@message.Status">@T(message.Status)</span></summary>
             <div class="disclosure-body">
-                <p><strong>@message.Tenant</strong></p><p>@message.Body</p>
+                <p><strong>@message.Tenant</strong></p><p>@T(message.Body)</p>
                 @if (!string.IsNullOrEmpty(message.Reply))
                 {
-                    <blockquote><strong>Bajkuj v meste</strong><p>@message.Reply</p></blockquote>
+                    <blockquote><strong>Bajkuj v meste</strong><p>@T(message.Reply)</p></blockquote>
                 }
             </div>
         </details>

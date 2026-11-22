@@ -1,28 +1,29 @@
 @{
-    ViewData["Title"] = "Spätná väzba – Bajkuj v meste";
+    ViewData["Title"] = T("Spätná väzba") + " – Bajkuj v meste";
 }
-<div class="intro"><h1>Spätná väzba</h1><p>Ohodnoťte prenájom alebo navrhnite zlepšenie</p></div>
+<div class="intro"><h1>@T("Spätná väzba")</h1><p>@T("Ohodnoťte prenájom alebo navrhnite zlepšenie")</p></div>
 <div class="prototype-grid">
     <section class="panel content-panel record-card">
-        <h2>Nové hodnotenie</h2>
+        <h2>@T("Nové hodnotenie")</h2>
         <form class="preview-form" id="feedback-form">
-            <label for="feedback-topic">Téma</label>
-            <select id="feedback-topic" required><option value="">Vyberte tému</option><option>Prevzatie bicykla</option><option>Vrátenie bicykla</option><option>Servis</option><option>Komunikácia</option></select>
-            <label for="feedback-rating">Hodnotenie</label>
-            <select id="feedback-rating" required><option value="">Vyberte hodnotenie</option><option>5 – Výborné</option><option>4 – Dobré</option><option>3 – Priemerné</option><option>2 – Slabé</option><option>1 – Veľmi slabé</option></select>
-            <label for="feedback-comment">Komentár</label>
+            <label for="feedback-topic">@T("Téma")</label>
+            <select id="feedback-topic" required><option value="">@T("Vyberte tému")</option><option>@T("Prevzatie bicykla")</option><option>@T("Vrátenie bicykla")</option><option>@T("Servis")</option><option>@T("Komunikácia")</option></select>
+            <label for="feedback-rating">@T("Hodnotenie")</label>
+            <select id="feedback-rating" required><option value="">@T("Vyberte hodnotenie")</option><option>@T("5 – Výborné")</option><option>@T("4 – Dobré")</option><option>@T("3 – Priemerné")</option><option>@T("2 – Slabé")</option><option>@T("1 – Veľmi slabé")</option></select>
+            <label for="feedback-comment">@T("Komentár")</label>
             <textarea id="feedback-comment" rows="4" maxlength="500" required></textarea>
-            <button type="submit">Pridať do náhľadu</button>
+            <button type="submit">@T("Pridať do náhľadu")</button>
         </form>
-        <p class="quiet">Príspevok je viditeľný v náhľade do obnovenia stránky.</p>
-        <p id="feedback-confirmation" role="status"></p>
+        <p class="quiet">@T("Príspevok je viditeľný v náhľade do obnovenia stránky.")</p>
+        <p id="feedback-confirmation" role="status" data-required="@T("Zadajte komentár.")"
+           data-saved="@T("Hodnotenie bolo pridané do náhľadu.")"></p>
     </section>
     <section class="panel content-panel record-card">
-        <h2>Moje hodnotenia</h2>
+        <h2>@T("Moje hodnotenia")</h2>
         <ul id="feedback-history" class="preview-stack">
             @foreach (var entry in PrototypeOperations.FeedbackEntries.Where(entry => entry.Tenant == "Peter Kováč"))
             {
-                <li><strong>@entry.Topic · @entry.Rating / 5</strong><p>@entry.Comment</p></li>
+                <li><strong>@T(entry.Topic) · @entry.Rating / 5</strong><p>@T(entry.Comment)</p></li>
             }
         </ul>
     </section>

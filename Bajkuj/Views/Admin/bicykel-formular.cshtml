@@ -1,0 +1,74 @@
+@model BikeInventoryForm
+@{
+    Layout = "_PrototypeLayout";
+    var bikeId = ViewData["BikeId"] as int?;
+    var routeName = bikeId.HasValue ? "inventory-edit" : "inventory-create";
+    var bikeTypes = (string[])ViewData["BikeTypes"]!;
+    ViewData["Title"] = T(bikeId.HasValue ? "Upraviť bicykel" : "Pridať bicykel");
+}
+<div class="intro"><h1>@ViewData["Title"]</h1></div>
+<section class="panel content-panel inventory-editor">
+    <form asp-route="@routeName" asp-route-id="@bikeId" class="preview-form" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="rental-notice" role="alert"></div>
+        <div class="inventory-form-grid">
+            <div>
+                <label asp-for="Name">@T("Názov bicykla")</label>
+                <input asp-for="Name" required maxlength="128">
+            </div>
+            <div>
+                <label asp-for="Type">@T("Typ")</label>
+                <select asp-for="Type" required>
+                    <option value="">@T("Vyberte typ bicykla")</option>
+                    @foreach (var type in bikeTypes)
+                    {
+                        <option value="@type">@T(type)</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label asp-for="Status">@T("Stav")</label>
+                <select asp-for="Status">
+                    @if (bikeId.HasValue)
+                    {
+                        <option value="">@T("Ponechať stav jednotlivých kusov")</option>
+                    }
+                    <option value="@BikeUnit.Available">@T("Dostupný")</option>
+                    <option value="@BikeUnit.Rented">@T("Prenajatý")</option>
+                    <option value="@BikeUnit.InService">@T("V servise")</option>
+                </select>
+            </div>
+            <div>
+                <label asp-for="Units">@T("Celkový počet kusov")</label>
+                <input asp-for="Units" type="number" min="1" max="10000" required>
+                <p class="quiet">@T("Obsadené kusy sa odpočítajú automaticky.")</p>
+            </div>
+            <div>
+                <label asp-for="MonthlyPrice">@T("Cena za mesiac") (€)</label>
+                <input asp-for="MonthlyPrice" inputmode="decimal" required>
+            </div>
+            <div>
+                <label asp-for="YearlyPrice">@T("Cena za rok") (€)</label>
+                <input asp-for="YearlyPrice" inputmode="decimal" required>
+            </div>
+        </div>
+        <div class="inventory-photo">
+            @if (ViewData["PhotoPath"] is string photo)
+            {
+                <img src="@Url.Content(photo)" alt="@Model.Name">
+            }
+            else
+            {
+                <span class="icon icon-bike" aria-hidden="true"></span>
+            }
+            <div>
+                <label asp-for="Photo">@T("Fotografia bicykla")</label>
+                <input asp-for="Photo" type="file" accept="image/jpeg,image/png,image/webp">
+                <p class="quiet">@T("Voliteľné. JPG, PNG alebo WebP do 2 MB.")</p>
+            </div>
+        </div>
+        <div class="inventory-card-actions">
+            <button type="submit">@T(bikeId.HasValue ? "Uložiť zmeny" : "Potvrdiť pridanie")</button>
+            <a asp-route="prototype" asp-route-role="admin" asp-route-section="bicykle">@T("Zrušiť")</a>
+        </div>
+    </form>
+</section>

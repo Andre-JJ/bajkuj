@@ -1,0 +1,14 @@
+@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = T("Skontrolujte svoj e-mail");
+}
+<h1>@ViewData["Title"]</h1>
+@if (Model.DisplayConfirmAccountLink)
+{
+    <p><a href="@Model.EmailConfirmationUrl">@T("Potvrdiť e-mail")</a></p>
+}
+else
+{
+    <p>@T("Skontrolujte e-mail a potvrďte svoj účet.")</p>
+}

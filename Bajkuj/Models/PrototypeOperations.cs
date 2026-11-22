@@ -3,7 +3,7 @@ namespace Bajkuj.Models;
 public static class PrototypeOperations
 {
     public const int PreviewTenantId = 1;
-    public static string Money(decimal amount) => amount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("sk-SK"));
+    public static string Money(decimal amount) => amount.ToString("C", System.Globalization.CultureInfo.CurrentCulture);
 
     public record Payment(string Reference, string Contract, int TenantId, string Tenant, decimal Amount, int DueInDays, string Method, string Status);
     public static IReadOnlyList<Payment> Payments { get; } =

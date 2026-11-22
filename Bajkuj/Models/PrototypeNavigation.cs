@@ -4,7 +4,7 @@ public record PrototypeNavigation(string Section, string Label, string Icon, boo
 {
     public static IReadOnlyList<PrototypeNavigation> Admin { get; } =
     [
-        new("index", "Dashboard", "home"),
+        new("index", "Domov", "home"),
         new("zaujemcovia", "Záujemcovia", "people"),
         new("bicykle", "Bicykle", "bike"),
         new("najomcovia", "Nájomcovia", "person"),
@@ -15,7 +15,7 @@ public record PrototypeNavigation(string Section, string Label, string Icon, boo
         new("komunikacia", "Komunikácia", "mail"),
         new("prehlady", "Prehľady", "chart"),
         new("spatna-vazba", "Spätná väzba", "mail"),
-        new("nastavenia", "Nastavenia", "settings"),
+        new("nastavenia", "Nastavenia", "settings", ShowInMenu: false),
         new("aktivita", "Posledná aktivita", "history", ShowInMenu: false)
     ];
 
@@ -28,6 +28,6 @@ public record PrototypeNavigation(string Section, string Label, string Icon, boo
         new("servis", "Servis", "wrench"),
         new("komunikacia", "Komunikácia", "mail"),
         new("spatna-vazba", "Spätná väzba", "mail"),
-        new("nastavenia", "Nastavenia", "settings")
+        new("nastavenia", "Nastavenia", "settings", ShowInMenu: false)
     ];
 }

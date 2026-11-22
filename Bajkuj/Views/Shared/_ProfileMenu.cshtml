@@ -1,0 +1,14 @@
+@model string
+<details class="profile-menu" name="account-panels">
+    <summary class="profile-menu-trigger" aria-label="@T("Môj profil")">
+        <span class="profile-menu-icon" aria-hidden="true"></span>
+    </summary>
+    <div class="profile-menu-panel">
+        <strong>@AccountProfile.DisplayName(User)</strong>
+        <a asp-area="" asp-route="prototype" asp-route-role="@Model" asp-route-section="nastavenia">@T("Nastavenia")</a>
+        <form asp-area="Identity" asp-page="/Account/Logout"
+              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+            <button type="submit">@T("Odhlásiť sa")</button>
+        </form>
+    </div>
+</details>

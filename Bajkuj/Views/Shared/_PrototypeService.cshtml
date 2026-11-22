@@ -2,13 +2,13 @@
     var isAdmin = (string?)ViewData["PrototypeRole"] == "admin";
     var services = PrototypeOperations.Services.Where(service => isAdmin || service.TenantId == PrototypeOperations.PreviewTenantId);
 }
-<div class="intro"><h1>Servis</h1><p>@(isAdmin ? "Stav servisných požiadaviek a ďalšie kroky" : "Priebeh servisu vašich bicyklov")</p></div>
+<div class="intro"><h1>@T("Servis")</h1><p>@T(isAdmin ? "Stav servisných požiadaviek a ďalšie kroky" : "Priebeh servisu vašich bicyklov")</p></div>
 <ul class="prototype-grid">
     @foreach (var service in services)
     {
         <li class="panel content-panel record-card">
-            <div class="record-heading"><span class="quiet">@service.Number</span><span class="contract-status" data-status="@service.Status">@service.Status</span></div>
-            <h2>@service.Issue</h2><p><strong>@service.Bike</strong></p><p>@service.Update</p>
+            <div class="record-heading"><span class="quiet">@service.Number</span><span class="contract-status" data-status="@service.Status">@T(service.Status)</span></div>
+            <h2>@T(service.Issue)</h2><p><strong>@service.Bike</strong></p><p>@T(service.Update)</p>
         </li>
     }
 </ul>

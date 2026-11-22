@@ -1,8 +1,8 @@
 @{
-    ViewData["Title"] = "Posledná aktivita – Bajkuj v meste";
+    ViewData["Title"] = T("Posledná aktivita") + " – Bajkuj v meste";
 }
 
-<div class="intro"><h1 id="activity-heading">Posledná aktivita</h1></div>
+<div class="intro"><h1 id="activity-heading">@T("Posledná aktivita")</h1></div>
 <section class="panel" aria-labelledby="activity-heading">
     <partial name="_PrototypeActivityList" model="PrototypeActivity.Recent" />
 </section>
