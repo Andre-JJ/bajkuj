@@ -6,7 +6,7 @@ public class Prenajom
     public string UserId { get; set; } = "";
     public ApplicationUser User { get; set; } = null!;
     public int BicykelId { get; set; }
-    public Bicykel Bicykel { get; set; } = null!;
+    public LegacyBicycle Bicykel { get; set; } = null!;
     public DateTime DatumOd { get; set; }
     public DateTime? DatumDo { get; set; }
     public decimal? CelkovaCena { get; set; }

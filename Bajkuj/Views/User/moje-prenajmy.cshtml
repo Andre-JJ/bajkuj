@@ -1,0 +1,80 @@
+@model IReadOnlyList<BikeRental>
+@{
+    ViewData["Title"] = T("Moje prenájmy");
+    var today = (DateOnly)ViewData["RentalToday"]!;
+    var groups = new[]
+    {
+        (Id: "active-rentals", Title: "Aktívne prenájmy", Rentals: Model.Where(rental => rental.IsActive(today)).ToList()),
+        (Id: "pending-rentals", Title: "Čaká na platbu", Rentals: Model.Where(rental => rental.PaymentPending).ToList()),
+        (Id: "rental-history", Title: "História prenájmov", Rentals: Model.Where(rental => !rental.PaymentPending && !rental.IsActive(today)).ToList())
+    };
+}
+<div class="intro"><h1>@T("Moje prenájmy")</h1></div>
+@if (TempData["RentalConfirmation"] is string confirmation)
+{
+    <p class="rental-notice" role="status">@T(confirmation)</p>
+}
+@if (Model.Count == 0)
+{
+    <p>@T("Zatiaľ nemáte žiadne prenájmy.")</p>
+}
+@foreach (var group in groups.Where(group => group.Rentals.Count > 0 || group.Id == "active-rentals" && Model.Count > 0))
+{
+    <section class="rentals-section" aria-labelledby="@group.Id">
+        <h2 id="@group.Id">@T(group.Title)</h2>
+        @if (group.Rentals.Count == 0)
+        {
+            <p class="quiet">@T("Nemáte žiadne aktívne prenájmy.")</p>
+        }
+        else
+        {
+            <ul class="rentals-list">
+                @foreach (var rental in group.Rentals)
+                {
+                    var active = rental.IsActive(today);
+                    var status = rental.PaymentPending ? "Čaká na platbu" : rental.CancelledOn.HasValue ? "Zrušený" : active ? "Aktívny" : "Ukončený";
+                    <li class="panel content-panel">
+                        <details class="rental-details">
+                            <summary>
+                                <strong>@rental.BikeModel</strong>
+                                @if (rental.IsTestRental)
+                                {
+                                    <span class="rental-test-label">@T("Testovací prenájom")</span>
+                                }
+                                <span class="contract-status" data-status="@(active ? "Aktívna" : "Ukončená")">@T(status)</span>
+                            </summary>
+                            <div class="record-card">
+                                <span class="quiet">#@rental.Id</span>
+                                <dl class="preview-facts">
+                                    <div><dt>@T("Evidenčné číslo")</dt><dd>@rental.BikeId</dd></div>
+                                    @if (rental.Term != RentalTerm.LegacyDaily)
+                                    {
+                                        <div><dt>@T("Dĺžka prenájmu")</dt><dd>@T(rental.Term == RentalTerm.Monthly ? "Mesačný prenájom" : "Ročný prenájom")</dd></div>
+                                    }
+                                    <div><dt>@T("Začiatok prenájmu")</dt><dd>@rental.StartDate.ToString("d")</dd></div>
+                                    <div><dt>@T("Dátum vrátenia")</dt><dd>@rental.ReturnDate.ToString("d")</dd></div>
+                                    @if (rental.CancelledOn is DateOnly cancelledOn)
+                                    {
+                                        <div><dt>@T("Dátum zrušenia")</dt><dd>@cancelledOn.ToString("d")</dd></div>
+                                    }
+                                    <div><dt>@T("Celková cena")</dt><dd>@PrototypeOperations.Money(rental.Price)</dd></div>
+                                </dl>
+                                @if (rental.PaymentPending)
+                                {
+                                    <a class="preview-action" asp-route="rental-payment" asp-route-id="@rental.Id">@T("Pokračovať k platbe")</a>
+                                }
+                                else if (active)
+                                {
+                                    <form class="preview-form" asp-route="cancel-rental" asp-route-id="@rental.Id" method="post">
+                                        <button type="submit">@T("Zrušiť prenájom")</button>
+                                    </form>
+                                }
+                            </div>
+                        </details>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+}
+<div class="preview-links"><a asp-route="prototype" asp-route-role="user" asp-route-section="bicykle">@T("Prezrieť bicykle")</a></div>

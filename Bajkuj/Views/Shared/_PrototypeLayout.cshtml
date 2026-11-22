@@ -10,67 +10,77 @@
         : Url.RouteUrl("prototype", new { role = "admin", section = "index" });
 }
 <!doctype html>
-<html lang="sk">
+<html lang="@Language">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewData["Title"]</title>
     <link rel="icon" type="image/png" href="~/prototype/logo.png" asp-append-version="true">
     <link rel="stylesheet" href="~/prototype/prototype.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/profile-menu.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/actions.css" asp-append-version="true">
     <script src="~/prototype/prototype.js" asp-append-version="true" defer></script>
+    <script src="~/prototype/bike-photos.js" asp-append-version="true" defer></script>
 </head>
 <body>
     <div class="layout">
         <aside class="sidebar">
-            <a class="brand brand-home" asp-controller="Home" asp-action="Index" aria-label="Bajkuj v meste – úvodná stránka">
+            <a class="brand brand-home" asp-controller="Home" asp-action="Index" aria-label="@T("Bajkuj v meste – úvodná stránka")">
                 <img class="brand-logo" src="~/prototype/logo.png" asp-append-version="true" alt="">
                 <p class="brand-name">BAJKUJ <span>V MESTE</span></p>
             </a>
-            <button class="mobile-menu" type="button" aria-expanded="true" aria-controls="prototype-navigation" hidden>Menu · @(navigation.FirstOrDefault(item => item.Section == section)?.Label)</button>
-            <nav id="prototype-navigation" aria-label="Hlavná navigácia">
+            <button class="mobile-menu" type="button" aria-expanded="true" aria-controls="prototype-navigation" hidden>Menu · @T(navigation.FirstOrDefault(item => item.Section == section)?.Label ?? "")</button>
+            <nav id="prototype-navigation" aria-label="@T("Hlavná navigácia")">
                 <ul class="menu">
                     @foreach (var item in navigation.Where(item => item.ShowInMenu))
                     {
                         var href = Url.RouteUrl("prototype", new { role, section = item.Section });
                         <li>
-                            <a href="@href" aria-current="@(item.Section == section ? "page" : null)" aria-label="@item.Label">
-                                <span class="icon icon-@item.Icon" aria-hidden="true"></span><span>@item.Label</span>
+                            <a href="@href" aria-current="@(item.Section == section ? "page" : null)" aria-label="@T(item.Label)">
+                                <span class="icon icon-@item.Icon" aria-hidden="true"></span><span>@T(item.Label)</span>
                             </a>
                         </li>
                     }
                 </ul>
             </nav>
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home")" method="post">
-                    <button class="sign-out" type="submit" aria-label="Odhlásiť sa">
-                        <span class="icon icon-logout" aria-hidden="true"></span><span>Odhlásiť sa</span>
-                    </button>
-                </form>
-            }
-            else
+            @if (User.Identity?.IsAuthenticated != true)
             {
                 <a class="sign-out" asp-area="Identity" asp-page="/Account/Login"
-                   asp-route-returnUrl="@currentPath" aria-label="Prihlásiť sa">
-                    <span class="icon icon-account" aria-hidden="true"></span><span>Prihlásiť sa</span>
+                   asp-route-returnUrl="@currentPath" aria-label="@T("Prihlásiť sa")">
+                    <span class="icon icon-account" aria-hidden="true"></span><span>@T("Prihlásiť sa")</span>
                 </a>
             }
         </aside>
         <div class="workspace">
             <header class="topbar">
+                <partial name="_LanguageSwitcher" />
                 <partial name="_PrototypeNotifications" model="isAdminPreview" />
                 <span class="topbar-divider" aria-hidden="true"></span>
                 <div class="account">
-                    <span class="account-name" data-profile-name>@(isAdminPreview ? "Martin Novotný" : "Peter Kováč")</span>
-                    <span class="icon icon-account" aria-hidden="true"></span>
-                    <details class="role-picker">
-                        <summary>Ukážka roly · @(isAdminPreview ? "Admin" : "Používateľ")</summary>
-                        <div class="role-options">
-                            <a href="@(isAdminPreview ? currentPath.Value : adminPreviewUrl)" aria-current="@(isAdminPreview ? "page" : null)">Admin</a>
-                            <a asp-route="prototype" asp-route-role="user" asp-route-section="@userSection"
-                               aria-current="@(!isAdminPreview ? "page" : null)">Používateľ</a>
-                        </div>
-                    </details>
+                    @if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <span class="account-name" data-profile-name>@(isAdminPreview ? "Martin Novotný" : "Peter Kováč")</span>
+                        <span class="icon icon-account" aria-hidden="true"></span>
+                    }
+                    @if (User.IsInRole(Bajkuj.Data.AdminAccounts.Role))
+                    {
+                        <details class="role-picker" name="account-panels" data-view="@role">
+                            <summary>
+                                <span class="icon @(isAdminPreview ? "icon-chart" : "icon-person")" aria-hidden="true"></span>
+                                <span>@T(isAdminPreview ? "Pohľad správcu" : "Pohľad používateľa")</span>
+                            </summary>
+                            <div class="role-options">
+                                <a href="@(isAdminPreview ? currentPath.Value : adminPreviewUrl)"
+                                   aria-current="@(isAdminPreview ? "page" : null)">@T("Pohľad správcu")</a>
+                                <a asp-route="prototype" asp-route-role="user" asp-route-section="@userSection"
+                                   aria-current="@(!isAdminPreview ? "page" : null)">@T("Pohľad používateľa")</a>
+                            </div>
+                        </details>
+                    }
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <partial name="_ProfileMenu" model="role" />
+                    }
                 </div>
             </header>
             <main>
@@ -78,5 +88,7 @@
             </main>
         </div>
     </div>
+    <partial name="_BikePhotoDialog" />
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

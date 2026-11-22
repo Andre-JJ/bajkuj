@@ -3,7 +3,7 @@
     var returnUrl = Context.Request.Query["returnUrl"].ToString();
 }
 <!doctype html>
-<html lang="en">
+<html lang="@Language">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,22 +11,24 @@
     <link rel="icon" type="image/png" href="~/prototype/logo.png" asp-append-version="true">
     <link rel="stylesheet" href="~/prototype/prototype.css" asp-append-version="true">
     <link rel="stylesheet" href="~/prototype/auth.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/actions.css" asp-append-version="true">
 </head>
 <body class="auth-page">
-    <aside class="auth-brand" lang="sk">
-        <a asp-area="" asp-controller="Home" asp-action="Index" aria-label="Bajkuj v meste – domov">
+    <aside class="auth-brand">
+        <a asp-area="" asp-controller="Home" asp-action="Index" aria-label="@T("Bajkuj v meste – domov")">
             <img class="brand-logo" src="~/prototype/logo.png" asp-append-version="true" alt="">
             <span class="brand-name">BAJKUJ <span>V MESTE</span></span>
         </a>
-        <p>Prenájom bicyklov do mesta</p>
+        <p>@T("Prenájom bicyklov do mesta")</p>
     </aside>
     <main class="auth-main">
+        <partial name="/Views/Shared/_LanguageSwitcher.cshtml" />
         <div class="auth-card">
             @RenderBody()
             @if (page is not ("/Account/Login" or "/Account/LoginWith2fa" or "/Account/LoginWithRecoveryCode"))
             {
                 <div class="auth-footer">
-                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl">Back to sign in</a>
+                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl">@T("Späť na prihlásenie")</a>
                 </div>
             }
         </div>

@@ -1,0 +1,30 @@
+@{
+    var request = Context.Request;
+    var returnUrl = $"{request.PathBase}{request.Path}{request.QueryString}";
+}
+<form class="language-switcher" asp-area="" asp-controller="Home" asp-action="SetLanguage" method="post"
+      role="group" aria-label="@T("Jazyk")">
+    <input type="hidden" name="returnUrl" value="@returnUrl">
+    <button type="submit" name="culture" value="@Slovak" aria-pressed="@(Language == "sk" ? "true" : "false")"
+            lang="sk" aria-label="Slovenčina">
+        <svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">
+            <path fill="#fff" d="M0 0h30v20H0z"/><path fill="#0b4ea2" d="M0 6.67h30V20H0z"/>
+            <path fill="#ee1c25" d="M0 13.33h30V20H0z"/>
+            <path fill="#ee1c25" stroke="#fff" stroke-width=".6" d="M5.6 4.8h9.1v5.8c0 2.2-1.8 4.2-4.55 5.5-2.75-1.3-4.55-3.3-4.55-5.5z"/>
+            <path stroke="#fff" stroke-width=".85" d="M10.15 6v7.3M8.2 8h3.9M7.5 10.1h5.3"/>
+            <path fill="#0b4ea2" d="M6.4 12.5c.7-1 1.5-1 2.2-.25.6-1.5 2.5-1.5 3.1 0 .7-.75 1.5-.75 2.2.25-.6 1.2-1.9 2.35-3.75 3.25-1.85-.9-3.15-2.05-3.75-3.25z"/>
+        </svg>
+        SK
+    </button>
+    <button type="submit" name="culture" value="@English" aria-pressed="@(Language == "en" ? "true" : "false")"
+            lang="en" aria-label="English">
+        <svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">
+            <path fill="#012169" d="M0 0h30v20H0z"/>
+            <path stroke="#fff" stroke-width="4" d="m0 0 30 20m0-20L0 20"/>
+            <path stroke="#c8102e" stroke-width="1.4" d="M0 0l15 10M30 0 15 10m0 0L0 20m15-10 15 10"/>
+            <path stroke="#fff" stroke-width="6" d="M15 0v20M0 10h30"/>
+            <path stroke="#c8102e" stroke-width="3.5" d="M15 0v20M0 10h30"/>
+        </svg>
+        EN
+    </button>
+</form>

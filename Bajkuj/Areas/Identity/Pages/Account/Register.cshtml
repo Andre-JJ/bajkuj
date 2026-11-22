@@ -1,0 +1,49 @@
+@page
+@model Bajkuj.Areas.Identity.Pages.Account.RegisterAccountModel
+@{
+    ViewData["Title"] = T("Vytvoriť účet");
+}
+<h1>@ViewData["Title"]</h1>
+<form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="form-group">
+        <label asp-for="Input.FirstName">@T("Meno")</label>
+        <input asp-for="Input.FirstName" class="form-control" autocomplete="given-name" maxlength="80" required>
+        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.LastName">@T("Priezvisko")</label>
+        <input asp-for="Input.LastName" class="form-control" autocomplete="family-name" maxlength="80" required>
+        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.Email">@T("E-mail")</label>
+        <input asp-for="Input.Email" class="form-control" autocomplete="email" required>
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.Password">@T("Heslo")</label>
+        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" required>
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Input.ConfirmPassword">@T("Potvrďte heslo")</label>
+        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" required>
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+    </div>
+    <button type="submit">@T("Vytvoriť účet")</button>
+</form>
+@if (Model.ExternalLogins.Any())
+{
+    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <h2>@T("Registrácia cez inú službu")</h2>
+        @foreach (var provider in Model.ExternalLogins)
+        {
+            <button type="submit" name="provider" value="@provider.Name">@provider.DisplayName</button>
+        }
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

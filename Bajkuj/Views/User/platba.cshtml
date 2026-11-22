@@ -1,0 +1,32 @@
+@model Bajkuj.Controllers.RentalPaymentController.CheckoutView
+@{
+    ViewData["Title"] = T("Platba kartou");
+}
+<div class="intro"><h1>@T("Platba kartou")</h1></div>
+<div class="checkout-grid">
+    <section class="panel content-panel record-card">
+        <h2>@Model.Rental.BikeModel</h2>
+        <dl class="preview-facts">
+            <div><dt>@T("Dĺžka prenájmu")</dt><dd>@T(Model.Rental.Term == RentalTerm.Yearly ? "Ročný prenájom" : "Mesačný prenájom")</dd></div>
+            <div><dt>@T("Začiatok prenájmu")</dt><dd>@Model.Rental.StartDate.ToString("d")</dd></div>
+            <div><dt>@T("Dátum vrátenia")</dt><dd>@Model.Rental.ReturnDate.ToString("d")</dd></div>
+            <div><dt>@T("Celková cena")</dt><dd>@PrototypeOperations.Money(Model.Rental.Price)</dd></div>
+        </dl>
+        <a class="preview-action" asp-route="my-rentals">@T("Moje prenájmy")</a>
+    </section>
+    <section class="panel content-panel record-card">
+        <h2>@T("Údaje o karte")</h2>
+        <form class="preview-form" data-card-checkout data-publishable-key="@Model.PublishableKey"
+              data-client-secret="@Model.ClientSecret" data-email="@AccountProfile.Email(User)"
+              data-result-url="@Url.RouteUrl("rental-payment", new { id = Model.Rental.Id })"
+              data-error="@T("Platbu sa nepodarilo načítať. Skúste znova.")">
+            <div data-payment-element></div>
+            <p data-payment-message role="status">@T("Načítava sa platobný formulár…")</p>
+            <button type="submit" disabled>@T("Potvrdiť prenájom")</button>
+        </form>
+    </section>
+</div>
+@section Scripts {
+    <script src="https://js.stripe.com/endive/stripe.js" defer></script>
+    <script src="~/prototype/rental-checkout.js" asp-append-version="true" defer></script>
+}

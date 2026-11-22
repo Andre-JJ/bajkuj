@@ -1,20 +1,20 @@
 @{
-    ViewData["Title"] = "Nájomcovia – Bajkuj v meste";
+    ViewData["Title"] = T("Nájomcovia") + " – Bajkuj v meste";
     var tenants = PrototypeContract.CreateMockContracts()
         .Where(contract => contract.Status == "Aktívna" || contract.Status == "Ukončená")
         .GroupBy(contract => contract.TenantId);
 }
-<div class="intro"><h1>Nájomcovia</h1><p>Aktívne prenájmy a história podľa nájomcu</p></div>
+<div class="intro"><h1>@T("Nájomcovia")</h1><p>@T("Aktívne prenájmy a história podľa nájomcu")</p></div>
 <div class="preview-stack">
     @foreach (var tenant in tenants)
     {
         <details class="panel disclosure">
-            <summary>@tenant.First().Tenant <span class="contract-status">@tenant.Count(contract => contract.Status == "Aktívna") aktívnych</span></summary>
+            <summary>@tenant.First().Tenant <span class="contract-status">@T("{0} aktívnych", tenant.Count(contract => contract.Status == "Aktívna"))</span></summary>
             <div class="disclosure-body">
                 <dl class="preview-facts">
                     @foreach (var contract in tenant.OrderByDescending(contract => contract.Start))
                     {
-                        <div><dt>@contract.Number · @contract.Status</dt><dd>@contract.Bicycle · @contract.Start.ToString("d. M. yyyy") – @contract.End.ToString("d. M. yyyy")</dd></div>
+                        <div><dt>@contract.Number · @T(contract.Status)</dt><dd>@contract.Bicycle · @contract.Start.ToString("d") – @contract.End.ToString("d")</dd></div>
                     }
                 </dl>
             </div>

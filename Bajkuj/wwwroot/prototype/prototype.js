@@ -1,6 +1,6 @@
 const mobileMenu = document.querySelector(".mobile-menu");
 const navigation = document.getElementById("prototype-navigation");
-const mobileLayout = window.matchMedia("(max-width: 660px)");
+const compactNavigation = window.matchMedia("(max-width: 660px), (max-height: 550px)");
 
 function setNavigation(open) {
     navigation.hidden = !open;
@@ -8,12 +8,12 @@ function setNavigation(open) {
 }
 
 function updateNavigation() {
-    mobileMenu.hidden = !mobileLayout.matches;
-    setNavigation(!mobileLayout.matches);
+    mobileMenu.hidden = !compactNavigation.matches;
+    setNavigation(!compactNavigation.matches);
 }
 
 mobileMenu.addEventListener("click", () => setNavigation(navigation.hidden));
-mobileLayout.addEventListener("change", updateNavigation);
+compactNavigation.addEventListener("change", updateNavigation);
 updateNavigation();
 
 const notificationMenu = document.querySelector("[data-notification-menu]");
@@ -64,9 +64,9 @@ if (preferencesForm) {
         const status = document.querySelector("[data-preferences-status]");
         try {
             localStorage.setItem(preferenceKey, JSON.stringify(preferences));
-            status.textContent = "Predvoľby boli uložené.";
+            status.textContent = status.dataset.saved;
         } catch {
-            status.textContent = "Predvoľby platia na tejto stránke. Prehliadač ich nemohol uložiť.";
+            status.textContent = status.dataset.unsaved;
         }
         updateNotifications();
     });
@@ -111,9 +111,9 @@ if (profileForm) {
         const status = document.querySelector("[data-profile-status]");
         try {
             localStorage.setItem(profileKey, JSON.stringify(profile));
-            status.textContent = "Ukážkový profil bol uložený.";
+            status.textContent = status.dataset.saved;
         } catch {
-            status.textContent = "Profil platí na tejto stránke. Prehliadač ho nemohol uložiť.";
+            status.textContent = status.dataset.unsaved;
         }
     });
 }
@@ -162,13 +162,14 @@ document.querySelectorAll("select[data-filter]").forEach((select) => {
 const feedbackForm = document.getElementById("feedback-form");
 
 if (feedbackForm) {
+    const confirmation = document.getElementById("feedback-confirmation");
     feedbackForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
         const comment = document.getElementById("feedback-comment");
         if (!comment.value.trim()) {
             comment.focus();
-            document.getElementById("feedback-confirmation").textContent = "Zadajte komentár.";
+            confirmation.textContent = confirmation.dataset.required;
             return;
         }
 
@@ -182,7 +183,19 @@ if (feedbackForm) {
         body.textContent = comment.value.trim();
         item.append(heading, body);
         document.getElementById("feedback-history").prepend(item);
-        document.getElementById("feedback-confirmation").textContent = "Hodnotenie bolo pridané do náhľadu.";
+        confirmation.textContent = confirmation.dataset.saved;
         feedbackForm.reset();
+    });
+}
+
+const rentalForm = document.querySelector("[data-rental-form]");
+if (rentalForm) {
+    const term = document.getElementById("rental-term");
+    const returnLabel = rentalForm.querySelector("[data-rental-return]");
+    const totalLabel = rentalForm.querySelector("[data-rental-total]");
+    term.addEventListener("change", () => {
+        const plan = term.selectedOptions[0];
+        returnLabel.textContent = plan.dataset.returnDate;
+        totalLabel.textContent = plan.dataset.price;
     });
 }

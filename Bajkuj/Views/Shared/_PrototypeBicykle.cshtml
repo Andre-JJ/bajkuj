@@ -1,58 +1,124 @@
 @using System.Globalization
-@model IReadOnlyList<Bajkuj.Models.Bicykel>
+@model IReadOnlyList<BikeStock>
 @{
-    ViewData["Title"] = "Bicykle – Bajkuj v meste";
+    ViewData["Title"] = T("Bicykle") + " – Bajkuj v meste";
     Layout = "_PrototypeLayout";
-    var isAdmin = (string?)ViewData["PrototypeRole"] == "admin";
-    var slovak = CultureInfo.GetCultureInfo("sk-SK");
+    var isAdmin = (string?)ViewData["PrototypeRole"] == "admin" && User.IsInRole(Bajkuj.Data.AdminAccounts.Role);
 }
 
-<div class="intro"><h1>Bicykle</h1><p>@(isAdmin ? "Evidencia vozového parku" : "Katalóg bicyklov a ich dostupnosť")</p></div>
+<div class="intro"><h1>@T("Bicykle")</h1><p>@T(isAdmin ? "Evidencia vozového parku" : "Katalóg bicyklov a ich dostupnosť")</p></div>
+@if (TempData["RentalNotice"] is string notice)
+{
+    <p class="rental-notice" role="status">@T(notice)</p>
+}
+@if (isAdmin && TempData["InventoryNotice"] is string inventoryNotice)
+{
+    <p class="rental-notice" role="status">@T(inventoryNotice)</p>
+}
 <div class="filter-bar">
-    <label for="bike-filter">Dostupnosť</label>
+    <label for="bike-filter">@T("Dostupnosť")</label>
     <select id="bike-filter" data-filter="bike-grid">
-        <option value="">Všetky bicykle (@Model.Count)</option>
-        <option value="dostupny">Dostupné</option>
-        <option value="prenajaty">Prenajaté</option>
-        <option value="v_servise">V servise</option>
+        <option value="">@T("Všetky bicykle ({0})", Model.Count)</option>
+        <option value="dostupny">@T("Dostupné")</option>
+        <option value="prenajaty">@T("Prenajaté")</option>
+        <option value="v_servise">@T("V servise")</option>
     </select>
+    @if (isAdmin)
+    {
+        <a class="preview-action inventory-add" asp-route="inventory-create">@T("Pridať bicykel")</a>
+    }
+    else
+    {
+        <a class="preview-action bike-rentals" asp-route="my-rentals">@T("Moje prenájmy")</a>
+    }
 </div>
 <ul class="bike-grid" id="bike-grid">
-    @foreach (var bicykel in Model)
+    @foreach (var stock in Model)
     {
-        var status = bicykel.Stav switch
+        var bicykel = stock.Bike;
+        var availability = stock.Status;
+        var status = availability switch
         {
             "dostupny" => "Dostupný",
             "prenajaty" => "Prenajatý",
             "v_servise" => "V servise",
-            _ => bicykel.Stav
+            _ => availability
         };
 
-        <li data-filter-value="@bicykel.Stav">
+        <li data-filter-value="@availability">
             <article class="panel bike-card">
                 <header>
-                    <span class="icon icon-bike" aria-hidden="true"></span>
+                    @if (bicykel.PhotoPath is string photo)
+                    {
+                        <a class="bike-thumbnail" href="@Url.Content(photo)" data-bike-photo aria-label="@T("Zväčšiť fotografiu bicykla {0}", bicykel.Model)">
+                            <img src="@Url.Content(photo)" alt="@bicykel.Model" loading="lazy">
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="icon icon-bike" aria-hidden="true"></span>
+                    }
                     <h2>@bicykel.Model</h2>
                 </header>
                 <dl>
                     @if (isAdmin)
                     {
-                        <dt>Evidenčné číslo</dt>
+                        <dt>@T("Číslo modelu")</dt>
                         <dd>@bicykel.Id</dd>
                     }
-                    <dt>Typ</dt>
-                    <dd>@bicykel.Typ</dd>
-                    <dt>Stav</dt>
-                    <dd><span class="bike-status" data-status="@bicykel.Stav">@status</span></dd>
-                    <dt>Cena za deň</dt>
-                    <dd>@bicykel.CenaZaDen.ToString("C", slovak)</dd>
+                    <dt>@T("Typ")</dt>
+                    <dd>@T(bicykel.Typ)</dd>
+                    <dt>@T("Stav")</dt>
+                    <dd><span class="bike-status" data-status="@availability">@T(status)</span></dd>
+                    <dt>@T("Dostupné kusy")</dt>
+                    <dd>@stock.AvailableUnits / @stock.TotalUnits</dd>
+                    <dt>@T("Cena za mesiac")</dt>
+                    <dd>@PrototypeOperations.Money(bicykel.CenaZaMesiac)</dd>
+                    <dt>@T("Cena za rok")</dt>
+                    <dd>@PrototypeOperations.Money(bicykel.CenaZaRok)</dd>
                     @if (isAdmin)
                     {
-                        <dt>Dátum pridania</dt>
-                        <dd><time datetime="@bicykel.DatumPridania.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@bicykel.DatumPridania.ToString("d. M. yyyy", slovak)</time></dd>
+                        <dt>@T("Dátum pridania")</dt>
+                        <dd><time datetime="@bicykel.DatumPridania.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@bicykel.DatumPridania.ToString("d")</time></dd>
                     }
                 </dl>
+                @if (isAdmin)
+                {
+                    <div class="inventory-card-actions">
+                        <a class="preview-action" asp-route="inventory-edit" asp-route-id="@bicykel.Id"
+                           aria-label="@T("Upraviť bicykel {0}", bicykel.Model)">@T("Upraviť")</a>
+                        <button class="inventory-delete-button" type="button" data-delete-bike
+                                data-delete-url="@Url.RouteUrl("inventory-delete", new { id = bicykel.Id })"
+                                data-bike-name="@bicykel.Model" aria-label="@T("Odstrániť bicykel {0}", bicykel.Model)">@T("Odstrániť")</button>
+                    </div>
+                }
+                else if (availability == "dostupny")
+                {
+                    <a class="preview-action" asp-route="rent-bike" asp-route-id="@bicykel.Id"
+                       aria-label="@T("Prenajať bicykel {0}", bicykel.Model)">@T("Prenajať bicykel")</a>
+                }
             </article>
         </li>
     }
 </ul>
+@if (isAdmin)
+{
+    <dialog class="inventory-dialog" id="inventory-delete-dialog" aria-labelledby="inventory-delete-title"
+            aria-describedby="inventory-delete-description">
+        <h2 id="inventory-delete-title">@T("Odstrániť bicykel?")</h2>
+        <p><strong data-delete-bike-name></strong></p>
+        <p id="inventory-delete-description">@T("Bicykel a jeho kusy sa odstránia z katalógu. História prenájmov sa zachová.")</p>
+        <form id="inventory-delete-form" method="post" asp-antiforgery="true">
+            <div class="inventory-card-actions">
+                <button class="inventory-cancel-button" type="button" data-cancel-delete autofocus>@T("Zrušiť")</button>
+                <button class="inventory-delete-button" type="submit">@T("Odstrániť bicykel")</button>
+            </div>
+        </form>
+    </dialog>
+}
+@section Scripts {
+    @if (isAdmin)
+    {
+        <script src="~/prototype/bike-inventory.js" asp-append-version="true" defer></script>
+    }
+}

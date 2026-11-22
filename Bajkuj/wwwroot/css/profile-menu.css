@@ -1,0 +1,13 @@
+.profile-menu { position: relative; flex: none; color: #202020; }
+.profile-menu-trigger { display: grid; place-items: center; width: 2.65rem; height: 2.65rem; border: 1px solid #e4e4e4; border-radius: 50%; cursor: pointer; list-style: none; }
+.profile-menu-trigger::-webkit-details-marker { display: none; }
+.profile-menu-trigger:hover, .profile-menu[open] > summary { background: #fff7d0; }
+.profile-menu-icon { position: relative; display: block; width: 1.45rem; height: 1.45rem; overflow: hidden; border: 1.5px solid currentColor; border-radius: 50%; }
+.profile-menu-icon::before, .profile-menu-icon::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); background: currentColor; }
+.profile-menu-icon::before { top: 17%; width: .37rem; height: .37rem; border-radius: 50%; }
+.profile-menu-icon::after { top: 52%; width: .85rem; height: .6rem; border-radius: .5rem .5rem 0 0; }
+.profile-menu-panel { position: absolute; z-index: 4; inset-inline-end: 0; top: calc(100% + .5rem); width: min(16rem, calc(100vw - 1.5rem)); padding: .35rem; border: 1px solid #e4e4e4; border-radius: .65rem; background: white; box-shadow: 0 4px 14px #0002; overflow-wrap: anywhere; }
+.profile-menu-panel strong { display: block; padding: .65rem .7rem; border-bottom: 1px solid #e4e4e4; }
+.profile-menu-panel form { margin: 0; }
+.profile-menu-panel a, .profile-menu-panel button { display: block; width: 100%; padding: .65rem .7rem; border: 0; border-radius: .35rem; background: transparent; color: inherit; font: inherit; text-align: start; text-decoration: none; cursor: pointer; }
+.profile-menu-panel a:hover, .profile-menu-panel button:hover { background: #fff7d0; }

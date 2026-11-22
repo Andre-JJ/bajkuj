@@ -1,0 +1,16 @@
+@page
+@model LogoutModel
+@{
+    ViewData["Title"] = T("Odhlásiť sa");
+}
+<h1>@ViewData["Title"]</h1>
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <form asp-page="./Logout" asp-route-returnUrl="@HttpContext.Request.Query["returnUrl"]" method="post">
+        <button type="submit">@T("Odhlásiť sa")</button>
+    </form>
+}
+else
+{
+    <p>@T("Odhlásili ste sa.")</p>
+}

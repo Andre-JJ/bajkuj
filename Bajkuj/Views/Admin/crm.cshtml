@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "CRM – Bajkuj v meste";
+    ViewData["Title"] = T("CRM") + " – Bajkuj v meste";
     var contacts = new[]
     {
         new { Name = "Eva Malá", Email = "eva.mala@example.com", Stage = "Nový kontakt", Interest = "Mestský bicykel na dochádzanie", Note = "Zaujíma ju mesačný prenájom od decembra.", Next = "Poslať ponuku na Kellys Avenue 30." },
@@ -7,29 +7,29 @@
         new { Name = "Peter Kováč", Email = "peter.kovac@example.com", Stage = "Aktívny nájomca", Interest = "Prenájom bicykla BK-023", Note = "Dohodnuté vrátenie na výdajnom mieste.", Next = "Overiť úhradu P-1051 pri vrátení." }
     };
 }
-<div class="intro"><h1>CRM</h1><p>Kontakty a ďalšie kroky od prvého dopytu po aktívny prenájom</p></div>
+<div class="intro"><h1>CRM</h1><p>@T("Kontakty a ďalšie kroky od prvého dopytu po aktívny prenájom")</p></div>
 <div class="filter-bar">
-    <label for="crm-filter">Fáza kontaktu</label>
+    <label for="crm-filter">@T("Fáza kontaktu")</label>
     <select id="crm-filter" data-filter="crm-contacts">
-        <option value="">Všetky kontakty</option><option>Nový kontakt</option><option>Čaká na podpis</option><option>Aktívny nájomca</option>
+        <option value="">@T("Všetky kontakty")</option><option value="Nový kontakt">@T("Nový kontakt")</option><option value="Čaká na podpis">@T("Čaká na podpis")</option><option value="Aktívny nájomca">@T("Aktívny nájomca")</option>
     </select>
 </div>
 <ul class="prototype-grid" id="crm-contacts">
     @foreach (var contact in contacts)
     {
         <li class="panel content-panel record-card" data-filter-value="@contact.Stage">
-            <div class="record-heading"><span class="contract-status" data-status="@contact.Stage">@contact.Stage</span></div>
+            <div class="record-heading"><span class="contract-status" data-status="@contact.Stage">@T(contact.Stage)</span></div>
             <h2>@contact.Name</h2><p class="quiet">@contact.Email</p>
             <dl class="preview-facts">
-                <div><dt>Záujem</dt><dd>@contact.Interest</dd></div>
-                <div><dt>Posledná poznámka</dt><dd>@contact.Note</dd></div>
-                <div><dt>Ďalší krok</dt><dd>@contact.Next</dd></div>
+                <div><dt>@T("Záujem")</dt><dd>@T(contact.Interest)</dd></div>
+                <div><dt>@T("Posledná poznámka")</dt><dd>@T(contact.Note)</dd></div>
+                <div><dt>@T("Ďalší krok")</dt><dd>@T(contact.Next)</dd></div>
             </dl>
         </li>
     }
 </ul>
 <div class="preview-links">
-    <a asp-route="prototype" asp-route-role="admin" asp-route-section="zaujemcovia">Záujemcovia</a>
-    <a asp-route="prototype" asp-route-role="admin" asp-route-section="najomcovia">Nájomcovia</a>
-    <a asp-route="prototype" asp-route-role="admin" asp-route-section="komunikacia">Konverzácie</a>
+    <a asp-route="prototype" asp-route-role="admin" asp-route-section="zaujemcovia">@T("Záujemcovia")</a>
+    <a asp-route="prototype" asp-route-role="admin" asp-route-section="najomcovia">@T("Nájomcovia")</a>
+    <a asp-route="prototype" asp-route-role="admin" asp-route-section="komunikacia">@T("Konverzácie")</a>
 </div>

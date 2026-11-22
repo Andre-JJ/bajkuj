@@ -1,0 +1,10 @@
+:where(button, input[type="submit"], [role="button"], summary, .btn, .landing-button, .preview-action, .sign-out, .all, .role-options a, .bike-thumbnail, .user-home a):not(:disabled, .disabled, [aria-disabled="true"]):hover {
+    outline: 2px solid #a87900;
+    outline-offset: 2px;
+    filter: brightness(.93);
+}
+
+:where(button, input[type="submit"], [role="button"], summary, .btn, .landing-button, .preview-action, .sign-out, .all, .role-options a, .bike-thumbnail, .user-home a):focus-visible {
+    outline: 2px solid #845f00;
+    outline-offset: 2px;
+}

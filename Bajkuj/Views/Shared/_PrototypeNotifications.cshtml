@@ -11,28 +11,28 @@
     var role = isAdmin ? "admin" : "user";
 }
 <details class="notification" data-notification-menu data-role="@role">
-    <summary aria-label="Oznámenia"><span class="icon icon-bell" aria-hidden="true"></span><span class="notification-dot" aria-hidden="true"></span></summary>
-    <section class="notification-panel" aria-label="Oznámenia">
-        <h2>Oznámenia</h2>
+    <summary aria-label="@T("Oznámenia")"><span class="icon icon-bell" aria-hidden="true"></span><span class="notification-dot" aria-hidden="true"></span></summary>
+    <section class="notification-panel" aria-label="@T("Oznámenia")">
+        <h2>@T("Oznámenia")</h2>
         <ul>
             @foreach (var contract in upcoming)
             {
                 <li data-notification="renewal" data-days-until-end="@(contract.End.DayNumber - today.DayNumber)">
-                    <strong>@(isAdmin ? "Blíži sa koniec prenájmu" : "Chcete predĺžiť prenájom?")</strong>
-                    <p>@contract.Bicycle · koniec @contract.End.ToString("d. M. yyyy")</p>
-                    <a asp-route="prototype" asp-route-role="@role" asp-route-section="zmluvy" asp-fragment="@contract.Number">Otvoriť zmluvu</a>
+                    <strong>@T(isAdmin ? "Blíži sa koniec prenájmu" : "Chcete predĺžiť prenájom?")</strong>
+                    <p>@contract.Bicycle · @T("koniec {0}", contract.End.ToString("d"))</p>
+                    <a asp-route="prototype" asp-route-role="@role" asp-route-section="zmluvy" asp-fragment="@contract.Number">@T("Otvoriť zmluvu")</a>
                 </li>
             }
             @foreach (var contract in ended)
             {
                 <li data-notification="ended">
-                    <strong>Prenájom sa skončil</strong>
-                    <p>@contract.Bicycle · skončil @contract.End.ToString("d. M. yyyy")</p>
-                    <a asp-route="prototype" asp-route-role="@role" asp-route-section="zmluvy" asp-fragment="@contract.Number">Otvoriť zmluvu</a>
+                    <strong>@T("Prenájom sa skončil")</strong>
+                    <p>@contract.Bicycle · @T("skončil {0}", contract.End.ToString("d"))</p>
+                    <a asp-route="prototype" asp-route-role="@role" asp-route-section="zmluvy" asp-fragment="@contract.Number">@T("Otvoriť zmluvu")</a>
                 </li>
             }
         </ul>
-        <p class="quiet" data-notification-empty hidden>Nemáte žiadne oznámenia.</p>
-        <a asp-route="prototype" asp-route-role="@role" asp-route-section="nastavenia">Nastavenia oznámení</a>
+        <p class="quiet" data-notification-empty hidden>@T("Nemáte žiadne oznámenia.")</p>
+        <a asp-route="prototype" asp-route-role="@role" asp-route-section="nastavenia">@T("Nastavenia oznámení")</a>
     </section>
 </details>

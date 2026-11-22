@@ -4,16 +4,19 @@ using Bajkuj.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Bajkuj.Migrations
+namespace Bajkuj.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261121230231_AddRentalPlansAndBikeUnits")]
+    partial class AddRentalPlansAndBikeUnits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,15 +44,19 @@ namespace Bajkuj.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
+                    b.Property<string>("LastName")
+                        .HasMaxLength(80)
+                        .HasColumnType("varchar(80)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Meno")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -67,10 +74,6 @@ namespace Bajkuj.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Priezvisko")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
@@ -102,7 +105,11 @@ namespace Bajkuj.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("CenaZaDen")
+                    b.Property<decimal>("CenaZaMesiac")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("CenaZaRok")
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
@@ -111,97 +118,144 @@ namespace Bajkuj.Migrations
 
                     b.Property<string>("Model")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Stav")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.Property<string>("Typ")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(40)
+                        .HasColumnType("varchar(40)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bicykle", t =>
+                    b.ToTable("Bicykle");
+
+                    b.HasData(
+                        new
                         {
-                            t.HasCheckConstraint("CK_Bicykel_Cena", "CenaZaDen >= 0");
+                            Id = 101,
+                            CenaZaMesiac = 8m,
+                            CenaZaRok = 85m,
+                            DatumPridania = new DateTime(2026, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Model = "Kellys Avenue 30",
+                            Typ = "Mestský"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            CenaZaMesiac = 12.50m,
+                            CenaZaRok = 133m,
+                            DatumPridania = new DateTime(2026, 9, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Model = "CTM Rambler 2.0",
+                            Typ = "Horský"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            CenaZaMesiac = 22m,
+                            CenaZaRok = 234m,
+                            DatumPridania = new DateTime(2026, 10, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Model = "Cube Touring Hybrid ONE",
+                            Typ = "Elektrobicykel"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            CenaZaMesiac = 9m,
+                            CenaZaRok = 96m,
+                            DatumPridania = new DateTime(2026, 10, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Model = "CTM Bora 2.0",
+                            Typ = "Mestský"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            CenaZaMesiac = 11m,
+                            CenaZaRok = 117m,
+                            DatumPridania = new DateTime(2026, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Model = "Giant Escape 3",
+                            Typ = "Trekingový"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            CenaZaMesiac = 13m,
+                            CenaZaRok = 138m,
+                            DatumPridania = new DateTime(2026, 10, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Model = "Merida Big Nine 20",
+                            Typ = "Horský"
                         });
                 });
 
-            modelBuilder.Entity("Bajkuj.Models.Platba", b =>
+            modelBuilder.Entity("Bajkuj.Models.BikeRental", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BikeId")
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("DatumPlatby")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("PrenajomId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SposobPlatby")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Stav")
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("Suma")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PrenajomId");
-
-                    b.ToTable("Platby");
-                });
-
-            modelBuilder.Entity("Bajkuj.Models.Prenajom", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BicykelId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal?>("CelkovaCena")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<DateTime?>("DatumDo")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("DatumOd")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Stav")
+                    b.Property<string>("BikeModel")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateOnly?>("CancelledOn")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("DailyRate")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateOnly>("ReturnDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Term")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TotalPrice")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("decimal(12,2)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BicykelId");
+                    b.HasIndex("BikeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "StartDate");
 
-                    b.ToTable("Prenajmy", t =>
-                        {
-                            t.HasCheckConstraint("CK_Prenajom_Datum", "DatumDo IS NULL OR DatumDo > DatumOd");
-                        });
+                    b.ToTable("BikeRentals");
                 });
 
-            modelBuilder.Entity("Bajkuj.Models.Servis", b =>
+            modelBuilder.Entity("Bajkuj.Models.BikeRentalDay", b =>
+                {
+                    b.Property<int>("BikeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<long>("BikeRentalId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("BikeId", "Date");
+
+                    b.HasIndex("BikeRentalId");
+
+                    b.ToTable("BikeRentalDays");
+                });
+
+            modelBuilder.Entity("Bajkuj.Models.BikeUnit", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,61 +266,126 @@ namespace Bajkuj.Migrations
                     b.Property<int>("BicykelId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DatumServisu")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<decimal?>("Naklady")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<string>("Popis")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Stav")
-                        .HasColumnType("longtext");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BicykelId");
+                    b.HasIndex("BicykelId", "Stav");
 
-                    b.ToTable("Servisy");
-                });
+                    b.ToTable("BikeUnits");
 
-            modelBuilder.Entity("Bajkuj.Models.Zmluva", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CisloZmluvy")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime?>("DatumPodpisu")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("DatumVytvorenia")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("DokumentUrl")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("PrenajomId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Stav")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CisloZmluvy")
-                        .IsUnique();
-
-                    b.HasIndex("PrenajomId")
-                        .IsUnique();
-
-                    b.ToTable("Zmluvy");
+                    b.HasData(
+                        new
+                        {
+                            Id = 101,
+                            BicykelId = 101,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 1101,
+                            BicykelId = 101,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 2101,
+                            BicykelId = 101,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 102,
+                            BicykelId = 102,
+                            Stav = "prenajaty"
+                        },
+                        new
+                        {
+                            Id = 1102,
+                            BicykelId = 102,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 2102,
+                            BicykelId = 102,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 103,
+                            BicykelId = 103,
+                            Stav = "v_servise"
+                        },
+                        new
+                        {
+                            Id = 1103,
+                            BicykelId = 103,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 2103,
+                            BicykelId = 103,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 104,
+                            BicykelId = 104,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 1104,
+                            BicykelId = 104,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 2104,
+                            BicykelId = 104,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 105,
+                            BicykelId = 105,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 1105,
+                            BicykelId = 105,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 2105,
+                            BicykelId = 105,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 106,
+                            BicykelId = 106,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 1106,
+                            BicykelId = 106,
+                            Stav = "dostupny"
+                        },
+                        new
+                        {
+                            Id = 2106,
+                            BicykelId = 106,
+                            Stav = "dostupny"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -405,56 +524,31 @@ namespace Bajkuj.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Bajkuj.Models.Platba", b =>
+            modelBuilder.Entity("Bajkuj.Models.BikeRental", b =>
                 {
-                    b.HasOne("Bajkuj.Models.Prenajom", "Prenajom")
-                        .WithMany("Platby")
-                        .HasForeignKey("PrenajomId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Bajkuj.Models.BikeUnit", null)
+                        .WithMany()
+                        .HasForeignKey("BikeId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Prenajom");
                 });
 
-            modelBuilder.Entity("Bajkuj.Models.Prenajom", b =>
+            modelBuilder.Entity("Bajkuj.Models.BikeRentalDay", b =>
                 {
-                    b.HasOne("Bajkuj.Models.Bicykel", "Bicykel")
-                        .WithMany()
+                    b.HasOne("Bajkuj.Models.BikeRental", null)
+                        .WithMany("Days")
+                        .HasForeignKey("BikeRentalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Bajkuj.Models.BikeUnit", b =>
+                {
+                    b.HasOne("Bajkuj.Models.Bicykel", null)
+                        .WithMany("Units")
                         .HasForeignKey("BicykelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Bajkuj.Models.ApplicationUser", "User")
-                        .WithMany("Prenajmy")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Bicykel");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Bajkuj.Models.Servis", b =>
-                {
-                    b.HasOne("Bajkuj.Models.Bicykel", "Bicykel")
-                        .WithMany()
-                        .HasForeignKey("BicykelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Bicykel");
-                });
-
-            modelBuilder.Entity("Bajkuj.Models.Zmluva", b =>
-                {
-                    b.HasOne("Bajkuj.Models.Prenajom", "Prenajom")
-                        .WithOne("Zmluva")
-                        .HasForeignKey("Bajkuj.Models.Zmluva", "PrenajomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Prenajom");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -508,16 +602,14 @@ namespace Bajkuj.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Bajkuj.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Bajkuj.Models.Bicykel", b =>
                 {
-                    b.Navigation("Prenajmy");
+                    b.Navigation("Units");
                 });
 
-            modelBuilder.Entity("Bajkuj.Models.Prenajom", b =>
+            modelBuilder.Entity("Bajkuj.Models.BikeRental", b =>
                 {
-                    b.Navigation("Platby");
-
-                    b.Navigation("Zmluva");
+                    b.Navigation("Days");
                 });
 #pragma warning restore 612, 618
         }

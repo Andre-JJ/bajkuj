@@ -1,0 +1,7 @@
+@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = T("Potvrdenie e-mailu");
+}
+<h1>@ViewData["Title"]</h1>
+<p role="status">@AccountError(Model.StatusMessage ?? "")</p>

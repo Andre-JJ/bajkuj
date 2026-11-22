@@ -2,36 +2,73 @@
     var isAdmin = (string?)ViewData["PrototypeRole"] == "admin";
     var role = isAdmin ? "admin" : "user";
 }
-<div class="intro"><h1>Nastavenia</h1><p>Profil a predvoľby oznámení</p></div>
-<div class="prototype-grid">
+<div class="intro"><h1>@T("Nastavenia")</h1><p>@T("Profil a predvoľby oznámení")</p></div>
+<div class="prototype-grid profile-layout">
     <section class="panel content-panel record-card">
-        <h2>@(isAdmin ? "Profil administrátora" : "Môj profil")</h2>
-        <form class="preview-form" id="profile-preferences">
-            <label for="profile-name">Meno a priezvisko</label>
-            <input id="profile-name" name="displayName" type="text" value="@(isAdmin ? "Martin Novotný" : "Peter Kováč")" maxlength="80" required autocomplete="name">
-            <label for="profile-email">Kontaktný e-mail</label>
-            <input id="profile-email" name="contactEmail" type="email" value="@(isAdmin ? "martin.novotny@example.com" : "peter.kovac@example.com")" maxlength="254" required autocomplete="email">
-            <button type="submit">Uložiť profil</button>
-        </form>
-        <p class="quiet">Ukážkový profil sa uloží v tomto prehliadači. Prihlasovací účet sa spravuje samostatne.</p>
-        <p data-profile-status role="status"></p>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <h2>@T("Môj profil")</h2>
+            <dl class="preview-facts">
+                <div><dt>@T("Meno a priezvisko")</dt><dd>@AccountProfile.DisplayName(User)</dd></div>
+                <div><dt>@T("Kontaktný e-mail")</dt><dd>@AccountProfile.Email(User)</dd></div>
+            </dl>
+            @if (TempData["ProfileSaved"] is string saved)
+            {
+                <p role="status">@T(saved)</p>
+            }
+            var profileError = TempData["ProfileError"] as string;
+            <details class="profile-editor disclosure" open="@(profileError is not null)">
+                <summary class="preview-action">@T("Upraviť profil")</summary>
+                @if (profileError is not null)
+                {
+                    <p class="rental-notice" role="alert">@T(profileError)</p>
+                }
+                <form class="preview-form" asp-route="edit-profile" method="post">
+                    <input type="hidden" name="role" value="@role">
+                    <label for="first-name">@T("Meno")</label>
+                    <input id="first-name" name="firstName" autocomplete="given-name" value="@User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value" required maxlength="80">
+                    <label for="last-name">@T("Priezvisko")</label>
+                    <input id="last-name" name="lastName" autocomplete="family-name" value="@User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value" required maxlength="80">
+                    <label for="account-email">@T("E-mail")</label>
+                    <input id="account-email" name="email" type="email" autocomplete="email" value="@AccountProfile.Email(User)" required maxlength="254">
+                    <label for="profile-password">@T("Aktuálne heslo pri zmene e-mailu")</label>
+                    <input id="profile-password" name="password" type="password" autocomplete="current-password">
+                    <button type="submit">@T("Uložiť profil")</button>
+                </form>
+            </details>
+        }
+        else
+        {
+            <h2>@T(isAdmin ? "Profil administrátora" : "Môj profil")</h2>
+            <form class="preview-form" id="profile-preferences">
+                <label for="profile-name">@T("Meno a priezvisko")</label>
+                <input id="profile-name" name="displayName" type="text" value="@(isAdmin ? "Martin Novotný" : "Peter Kováč")" maxlength="80" required autocomplete="name">
+                <label for="profile-email">@T("Kontaktný e-mail")</label>
+                <input id="profile-email" name="contactEmail" type="email" value="@(isAdmin ? "martin.novotny@example.com" : "peter.kovac@example.com")" maxlength="254" required autocomplete="email">
+                <button type="submit">@T("Uložiť profil")</button>
+            </form>
+            <p class="quiet">@T("Ukážkový profil sa uloží v tomto prehliadači. Prihlasovací účet sa spravuje samostatne.")</p>
+            <p data-profile-status role="status" data-saved="@T("Ukážkový profil bol uložený.")"
+               data-unsaved="@T("Profil platí na tejto stránke. Prehliadač ho nemohol uložiť.")"></p>
+        }
     </section>
     <section class="panel content-panel record-card">
-        <h2>Oznámenia v aplikácii</h2>
-        <p>Vyberte, čo sa má zobrazovať po kliknutí na zvonček.</p>
+        <h2>@T("Oznámenia v aplikácii")</h2>
+        <p>@T("Vyberte, čo sa má zobrazovať po kliknutí na zvonček.")</p>
         <form class="preview-form" id="notification-preferences" data-role="@role">
-            <label class="preference-option"><input type="checkbox" name="renewal" checked> Pripomienky pred koncom prenájmu</label>
-            <label class="preference-option"><input type="checkbox" name="ended" checked> Oznámenia o ukončených prenájmoch</label>
-            <label for="reminder-days">Pripomenúť koniec prenájmu</label>
+            <label class="preference-option"><input type="checkbox" name="renewal" checked> @T("Pripomienky pred koncom prenájmu")</label>
+            <label class="preference-option"><input type="checkbox" name="ended" checked> @T("Oznámenia o ukončených prenájmoch")</label>
+            <label for="reminder-days">@T("Pripomenúť koniec prenájmu")</label>
             <select id="reminder-days" name="reminderDays">
-                <option value="1">1 deň vopred</option>
-                <option value="3">3 dni vopred</option>
-                <option value="7" selected>7 dní vopred</option>
-                <option value="14">14 dní vopred</option>
+                <option value="1">@T("1 deň vopred")</option>
+                <option value="3">@T("3 dni vopred")</option>
+                <option value="7" selected>@T("7 dní vopred")</option>
+                <option value="14">@T("14 dní vopred")</option>
             </select>
-            <button type="submit">Uložiť predvoľby</button>
+            <button type="submit">@T("Uložiť predvoľby")</button>
         </form>
-        <p class="quiet">Predvoľby sa ukladajú v tomto prehliadači.</p>
-        <p data-preferences-status role="status"></p>
+        <p class="quiet">@T("Predvoľby sa ukladajú v tomto prehliadači.")</p>
+        <p data-preferences-status role="status" data-saved="@T("Predvoľby boli uložené.")"
+           data-unsaved="@T("Predvoľby platia na tejto stránke. Prehliadač ich nemohol uložiť.")"></p>
     </section>
 </div>
