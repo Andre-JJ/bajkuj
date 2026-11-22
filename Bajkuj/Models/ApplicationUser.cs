@@ -9,6 +9,7 @@ public class ApplicationUser : IdentityUser
 {
     [MaxLength(80)] public string? FirstName { get; set; }
     [MaxLength(80)] public string? LastName { get; set; }
+    public ICollection<Prenajom> Prenajmy { get; set; } = new List<Prenajom>();
 }
 
 public class AccountClaimsFactory(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,

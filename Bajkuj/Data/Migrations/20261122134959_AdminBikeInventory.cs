@@ -52,7 +52,7 @@ namespace Bajkuj.Data.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.Sql("UPDATE `BikeRentals` SET `BikeUnitId` = `BikeId`");
+            migrationBuilder.Sql("UPDATE `BikeRentals` SET `BikeUnitId` = `BikeId`;");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BikeRentals_BikeUnitId",
